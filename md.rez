@@ -1,0 +1,1014 @@
+#include "types.rez"
+#include "md.equ"
+
+#define COPY_YEAR "2021"
+
+read rCodeResource ($00000001, convert, locked) "o:babel";
+read rCodeResource ($00000002, convert, locked) "o:importOpt";
+read rCodeResource ($00000004, convert, locked) "o:filter";
+
+
+// --- type $5472 is undefined and therefore created as hex DATA 
+
+data $5472 ($00000001, $0000) {
+    $"00 00"
+    $"03 00"
+    $"03 00" 
+    $"01 00 00 00 00 00 00 00"
+    $"00 00"
+    $"00 00 00 00 00 00 00 00";
+};
+
+// --- Icon Definitions
+
+resource rIcon (ICON_00000001, $0000) {
+       $0000,                  // kind
+       $0005,                  // height
+       $0006,                  // width
+
+       $"FF4FFF"
+       $"F444FF"
+       $"44444F"
+       $"F444FF"
+       $"FF4FFF",
+
+       $"00B000"
+       $"0BBB00"
+       $"BBBBB0"
+       $"0BBB00"
+       $"00B000";
+};
+
+// --- Control List Definitions
+
+resource rControlList (CTLLST_00001003, $0000) {
+       {
+       CTLTMP_00000001,        // control 1
+       CTLTMP_00000002,        // control 2
+       CTLTMP_00000003,        // control 3
+       CTLTMP_00000004,        // control 4
+       CTLTMP_00000006,        // control 5
+       CTLTMP_00000007,        // control 6
+       CTLTMP_00000009,        // control 7
+       CTLTMP_0000000A,        // control 8
+       CTLTMP_0000000B,        // control 9
+       CTLTMP_0000000C,        // control 10
+       CTLTMP_0000000D,        // control 11
+       CTLTMP_0000000E,        // control 12
+       CTLTMP_0000000F,        // control 13
+       CTLTMP_00000010,        // control 14
+       CTLTMP_00000011,        // control 15
+       CTLTMP_00000012,        // control 16
+       CTLTMP_00000017,        // control 17
+       CTLTMP_00000016,        // control 18
+       CTLTMP_00000015,        // control 19
+       CTLTMP_00000014,        // control 20
+       CTLTMP_00000013,        // control 21
+       CTLTMP_00000008,        // control 22
+       CTLTMP_00000019,        // control 23
+       CTLTMP_0000001A,        // control 24
+       CTLTMP_0000001B,        // control 25
+       CTLTMP_0000001C,        // control 26
+       CTLTMP_0000001D,        // control 27
+       CTLTMP_0000001E,        // control 28
+       CTLTMP_0000001F,        // control 29
+       CTLTMP_00000020,        // control 30
+       CTLTMP_00000021,        // control 31
+       CTLTMP_00000018,        // control 32
+       };
+};
+
+// --- Control Templates
+
+resource rControlTemplate (CTLTMP_00000001, $0000) {
+       $00000001,              // ID
+       {  3, 10, 12, 94},      // rect
+       statTextControl {{
+               $0000,          // flag
+               $1002,          // moreFlags
+               $00000000,      // refCon
+               LETXTBOX_00000001,     // textRef
+               LETXTBOX_00000001_CNT, // textSize
+               $0000           // just
+       }};
+};
+
+resource rControlTemplate (CTLTMP_00000002, $0000) {
+       $00000002,              // ID
+       {  3,336, 12,385},      // rect
+       statTextControl {{
+               $0000,          // flag
+               $1002,          // moreFlags
+               $00000000,      // refCon
+               LETXTBOX_00000002,     // textRef
+               LETXTBOX_00000002_CNT, // textSize
+               $0000           // just
+       }};
+};
+
+resource rControlTemplate (CTLTMP_00000003, $0000) {
+       $00000003,              // ID
+       { 16, 14, 26,236},      // rect
+       checkControl {{
+               $0000,          // flag
+               $1002,          // moreFlags
+               $00000000,      // refCon
+               PSTR_00000010,  // titleRef
+               $0000           // initialValue
+       }};
+};
+
+resource rControlTemplate (CTLTMP_00000004, $0000) {
+       $00000004,              // ID
+       { 27, 10, 39,230},      // rect
+       popUpControl {{
+               $0040,          // flag
+               $3082,          // moreFlags
+               $00000000,      // refCon
+               $0000,          // titleWidth
+               MENU_00000001,  // menuRef
+               $0001,          // initialValue
+               0               // colorTableRef
+       }};
+};
+
+resource rControlTemplate (CTLTMP_00000006, $0000) {
+       $00000006,              // ID
+       { 46, 26, 56,105},      // rect
+       statTextControl {{
+               $0000,          // flag
+               $1002,          // moreFlags
+               $00000000,      // refCon
+               LETXTBOX_00000003,     // textRef
+               LETXTBOX_00000003_CNT, // textSize
+               $0000           // just
+       }};
+};
+
+resource rControlTemplate (CTLTMP_00000007, $0000) {
+       $00000007,              // ID
+       { 60, 18, 70, 69},      // rect
+       statTextControl {{
+               $0000,          // flag
+               $1002,          // moreFlags
+               $00000000,      // refCon
+               LETXTBOX_00000004,     // textRef
+               LETXTBOX_00000004_CNT, // textSize
+               $0000           // just
+       }};
+};
+
+resource rControlTemplate (CTLTMP_00000008, $0000) {
+       $00000008,              // ID
+       { 58, 84, 71,120},      // rect
+       editLineControl {{
+               $0000,          // flag
+               $7002,          // moreFlags
+               $00000000,      // refCon
+               $0003,          // maxSize
+               PSTR_0000000B   // defaultRef
+       }};
+};
+
+resource rControlTemplate (CTLTMP_00000009, $0000) {
+       $00000009,              // ID
+       {135,188,148,278},      // rect
+       simpleButtonControl {{
+               $0000,          // flag
+               $3002,          // moreFlags
+               $00000000,      // refCon
+               PSTR_0000000A,  // titleRef
+               0,              // colorTableRef
+               {"\$1B", "\$1B",$0000,$0000}  // key equivalents
+       }};
+};
+
+resource rControlTemplate (CTLTMP_0000000A, $0000) {
+       $0000000A,              // ID
+       {135,290,148,380},      // rect
+       simpleButtonControl {{
+               $0001,          // flag
+               $3002,          // moreFlags
+               $00000000,      // refCon
+               PSTR_00000009,  // titleRef
+               0,              // colorTableRef
+               {"\$0D", "\$0D",$0000,$0000}  // key equivalents
+       }};
+};
+
+resource rControlTemplate (CTLTMP_0000000B, $0000) {
+       $0000000B,              // ID
+       { 13, 10, 14,385},      // rect
+       rectangleControl {{
+               $FF02,          // flag
+               $1000,          // moreFlags
+               $00000000       // refCon
+       }};
+};
+
+resource rControlTemplate (CTLTMP_0000000C, $0000) {
+       $0000000C,              // ID
+       { 74, 18, 84, 83},      // rect
+       statTextControl {{
+               $0000,          // flag
+               $1002,          // moreFlags
+               $00000000,      // refCon
+               LETXTBOX_00000005,     // textRef
+               LETXTBOX_00000005_CNT, // textSize
+               $0000           // just
+       }};
+};
+
+resource rControlTemplate (CTLTMP_0000000D, $0000) {
+       $0000000D,              // ID
+       { 90, 18,100, 83},      // rect
+       statTextControl {{
+               $0000,          // flag
+               $1002,          // moreFlags
+               $00000000,      // refCon
+               LETXTBOX_00000006,     // textRef
+               LETXTBOX_00000006_CNT, // textSize
+               $0000           // just
+       }};
+};
+
+resource rControlTemplate (CTLTMP_0000000E, $0000) {
+       $0000000E,              // ID
+       { 74,143, 84,204},      // rect
+       statTextControl {{
+               $0000,          // flag
+               $1002,          // moreFlags
+               $00000000,      // refCon
+               LETXTBOX_00000007,     // textRef
+               LETXTBOX_00000007_CNT, // textSize
+               $0000           // just
+       }};
+};
+
+resource rControlTemplate (CTLTMP_0000000F, $0000) {
+       $0000000F,              // ID
+       { 90,143,100,204},      // rect
+       statTextControl {{
+               $0000,          // flag
+               $1002,          // moreFlags
+               $00000000,      // refCon
+               LETXTBOX_00000008,     // textRef
+               LETXTBOX_00000008_CNT, // textSize
+               $0000           // just
+       }};
+};
+
+resource rControlTemplate (CTLTMP_00000010, $0000) {
+       $00000010,              // ID
+       { 74,271, 84,334},      // rect
+       statTextControl {{
+               $0000,          // flag
+               $1002,          // moreFlags
+               $00000000,      // refCon
+               LETXTBOX_00000009,     // textRef
+               LETXTBOX_00000009_CNT, // textSize
+               $0000           // just
+       }};
+};
+
+resource rControlTemplate (CTLTMP_00000011, $0000) {
+       $00000011,              // ID
+       { 90,271,100,334},      // rect
+       statTextControl {{
+               $0000,          // flag
+               $1002,          // moreFlags
+               $00000000,      // refCon
+               LETXTBOX_0000000A,     // textRef
+               LETXTBOX_0000000A_CNT, // textSize
+               $0000           // just
+       }};
+};
+
+resource rControlTemplate (CTLTMP_00000012, $0000) {
+       $00000012,              // ID
+       { 72, 84, 85,120},      // rect
+       editLineControl {{
+               $0000,          // flag
+               $7002,          // moreFlags
+               $00000000,      // refCon
+               $0003,          // maxSize
+               PSTR_00000008   // defaultRef
+       }};
+};
+
+resource rControlTemplate (CTLTMP_00000013, $0000) {
+       $00000013,              // ID
+       { 87, 84,100,120},      // rect
+       editLineControl {{
+               $0000,          // flag
+               $7002,          // moreFlags
+               $00000000,      // refCon
+               $0003,          // maxSize
+               PSTR_00000007   // defaultRef
+       }};
+};
+
+resource rControlTemplate (CTLTMP_00000014, $0000) {
+       $00000014,              // ID
+       { 72,210, 85,246},      // rect
+       editLineControl {{
+               $0000,          // flag
+               $7002,          // moreFlags
+               $00000000,      // refCon
+               $0003,          // maxSize
+               PSTR_00000006   // defaultRef
+       }};
+};
+
+resource rControlTemplate (CTLTMP_00000015, $0000) {
+       $00000015,              // ID
+       { 87,210,100,246},      // rect
+       editLineControl {{
+               $0000,          // flag
+               $7002,          // moreFlags
+               $00000000,      // refCon
+               $0003,          // maxSize
+               PSTR_00000005   // defaultRef
+       }};
+};
+
+resource rControlTemplate (CTLTMP_00000016, $0000) {
+       $00000016,              // ID
+       { 72,339, 85,377},      // rect
+       editLineControl {{
+               $0000,          // flag
+               $7002,          // moreFlags
+               $00000000,      // refCon
+               $0003,          // maxSize
+               PSTR_00000004   // defaultRef
+       }};
+};
+
+resource rControlTemplate (CTLTMP_00000017, $0000) {
+       $00000017,              // ID
+       { 87,339,100,377},      // rect
+       editLineControl {{
+               $0000,          // flag
+               $7002,          // moreFlags
+               $00000000,      // refCon
+               $0003,          // maxSize
+               PSTR_00000003   // defaultRef
+       }};
+};
+
+resource rControlTemplate (CTLTMP_00000018, $0000) {
+       $00000018,              // ID
+       { 51,  7,107,396},      // rect
+       rectangleControl {{
+               $FF02,          // flag
+               $1000,          // moreFlags
+               $00000000       // refCon
+       }};
+};
+
+resource rControlTemplate (CTLTMP_00000019, $0000) {
+       $00000019,              // ID
+       { 60,120, 69,140},      // rect
+       iconButtonControl {{
+               $0004,          // flag
+               $1020,          // moreFlags
+               $00000000,      // refCon
+               ICON_00000001,  // iconRef
+               0,              // titleRef
+               0,              // colorTableRef
+               $0000           // displayMode
+       }};
+};
+
+resource rControlTemplate (CTLTMP_0000001A, $0000) {
+       $0000001A,              // ID
+       { 74,120, 83,140},      // rect
+       iconButtonControl {{
+               $0004,          // flag
+               $1020,          // moreFlags
+               $00000000,      // refCon
+               ICON_00000001,  // iconRef
+               0,              // titleRef
+               0,              // colorTableRef
+               $0000           // displayMode
+       }};
+};
+
+resource rControlTemplate (CTLTMP_0000001B, $0000) {
+       $0000001B,              // ID
+       { 89,120, 98,140},      // rect
+       iconButtonControl {{
+               $0004,          // flag
+               $1020,          // moreFlags
+               $00000000,      // refCon
+               ICON_00000001,  // iconRef
+               0,              // titleRef
+               0,              // colorTableRef
+               $0000           // displayMode
+       }};
+};
+
+resource rControlTemplate (CTLTMP_0000001C, $0000) {
+       $0000001C,              // ID
+       { 74,248, 83,268},      // rect
+       iconButtonControl {{
+               $0004,          // flag
+               $1020,          // moreFlags
+               $00000000,      // refCon
+               ICON_00000001,  // iconRef
+               0,              // titleRef
+               0,              // colorTableRef
+               $0000           // displayMode
+       }};
+};
+
+resource rControlTemplate (CTLTMP_0000001D, $0000) {
+       $0000001D,              // ID
+       { 89,248, 98,268},      // rect
+       iconButtonControl {{
+               $0004,          // flag
+               $1020,          // moreFlags
+               $00000000,      // refCon
+               ICON_00000001,  // iconRef
+               0,              // titleRef
+               0,              // colorTableRef
+               $0000           // displayMode
+       }};
+};
+
+resource rControlTemplate (CTLTMP_0000001E, $0000) {
+       $0000001E,              // ID
+       { 78,377, 83,397},      // rect
+       iconButtonControl {{
+               $0004,          // flag
+               $1020,          // moreFlags
+               $00000000,      // refCon
+               ICON_00000001,  // iconRef
+               0,              // titleRef
+               0,              // colorTableRef
+               $0000           // displayMode
+       }};
+};
+
+resource rControlTemplate (CTLTMP_0000001F, $0000) {
+       $0000001F,              // ID
+       { 89,377, 98,397},      // rect
+       iconButtonControl {{
+               $0004,          // flag
+               $1020,          // moreFlags
+               $00000000,      // refCon
+               ICON_00000001,  // iconRef
+               0,              // titleRef
+               0,              // colorTableRef
+               $0000           // displayMode
+       }};
+};
+
+resource rControlTemplate (CTLTMP_00000020, $0000) {
+       $00000020,              // ID
+       {109, 53,118, 73},      // rect
+       iconButtonControl {{
+               $0084,          // flag
+               $1020,          // moreFlags
+               $00000000,      // refCon
+               ICON_00000001,  // iconRef
+               0,              // titleRef
+               0,              // colorTableRef
+               $0000           // displayMode
+       }};
+};
+
+resource rControlTemplate (CTLTMP_00000021, $0000) {
+       $00000021,              // ID
+       {109, 72,119,341},      // rect
+       statTextControl {{
+               $0080,          // flag
+               $1002,          // moreFlags
+               $00000000,      // refCon
+               LETXTBOX_0000000B,     // textRef
+               LETXTBOX_0000000B_CNT, // textSize
+               $0000           // just
+       }};
+};
+
+// --- rPString Templates
+
+resource rPString (PSTR_00000003, $0000) {
+       "666"
+};
+
+resource rPString (PSTR_00000004, $0000) {
+       "555"
+};
+
+resource rPString (PSTR_00000005, $0000) {
+       "444"
+};
+
+resource rPString (PSTR_00000006, $0000) {
+       "333"
+};
+
+resource rPString (PSTR_00000007, $0000) {
+       "222"
+};
+
+resource rPString (PSTR_00000008, $0000) {
+       "111"
+};
+
+resource rPString (PSTR_00000009, $0000) {
+       "Accept"
+};
+
+resource rPString (PSTR_0000000A, $0000) {
+       "Cancel"
+};
+
+resource rPString (PSTR_0000000B, $0000) {
+       "123"
+};
+
+resource rPString (PSTR_0000000E, $0000) {
+       "Item 1"
+};
+
+resource rPString (PSTR_0000000F, $0000) {
+       "Text Font  "
+};
+
+resource rPString (PSTR_00000010, $0000) {
+       "Use SIS Fonts for defaults"
+};
+
+resource rPString (PSTR_00000011, $0000) {
+       "MarkdownGS"
+};
+
+resource rPString (PSTR_00000012, $0000) {
+       "Chris Vavruska"
+};
+
+resource rPString (PSTR_00000013, $0000) {
+       "http://vavruska.com/a2/"
+};
+
+resource rPString (PSTR_00000014, $0000) {
+       "markdownV01.bxy"
+};
+
+resource rPString (PSTR_00000015, $0000) {
+       "vavruska"
+};
+
+resource rPString (PSTR_00010005, $0000) {
+       "Import Options"
+};
+
+// --- Menu Definitions
+
+resource rMenu (MENU_00000001, $0000) {
+       $0001,                  // menuID
+       $A000,                  // menuFlag
+       PSTR_0000000F, {        // menuTitleRef
+               MENUITEM_00000001
+       };
+};
+
+// --- Menu Item Definitions
+
+resource rMenuItem (MENUITEM_00000001, $0000) {
+       $0001,                  // itemID
+       "","",                  // itemChar, itemAltChar
+       NIL,                    // itemCheck
+       $8000,                  // itemFlag
+       PSTR_0000000E           // itemTitleRef
+};
+
+// --- rTextForLETextBox2 Templates
+
+#define LETXTBOX_00000001_CNT 36 /* move this line to the top of this file */
+
+resource rTextForLETextBox2 (LETXTBOX_00000001, $0000) {
+       "\$01"
+       "J"
+       "\$00"
+       "\$00"
+       "\$01"
+       "L"
+       "\$00"
+       "\$00"
+       "\$01"
+       "R"
+       "\$04"
+       "\$00"
+       "\$01"
+       "F"
+       "\$FE"
+       "\$FF"
+       "\$00"
+       "\$08"
+       "\$01"
+       "C"
+       "\$00"
+       "\$00"
+       "\$01"
+       "B"
+       "\$FF"
+       "\$FF"
+       "MarkdownGS"
+};
+
+#define LETXTBOX_00000002_CNT 33 /* move this line to the top of this file */
+
+resource rTextForLETextBox2 (LETXTBOX_00000002, $0000) {
+       "\$01"
+       "J"
+       "\$FF"
+       "\$FF"
+       "\$01"
+       "L"
+       "\$00"
+       "\$00"
+       "\$01"
+       "R"
+       "\$04"
+       "\$00"
+       "\$01"
+       "F"
+       "\$FE"
+       "\$FF"
+       "\$00"
+       "\$08"
+       "\$01"
+       "C"
+       "\$00"
+       "\$00"
+       "\$01"
+       "B"
+       "\$FF"
+       "\$FF"
+       "Version"
+};
+
+#define LETXTBOX_00000003_CNT 52 /* move this line to the top of this file */
+
+resource rTextForLETextBox2 (LETXTBOX_00000003, $0000) {
+       "\$01"
+       "J"
+       "\$00"
+       "\$00"
+       "\$01"
+       "L"
+       "\$00"
+       "\$00"
+       "\$01"
+       "R"
+       "\$04"
+       "\$00"
+       "\$01"
+       "F"
+       "\$FE"
+       "\$FF"
+       "\$00"
+       "\$08"
+       "\$01"
+       "C"
+       "\$00"
+       "\$00"
+       "\$01"
+       "B"
+       "\$FF"
+       "\$FF"
+       " Font Sizes "
+       "\$01"
+       "F"
+       "\$FE"
+       "\$FF"
+       "\$00"
+       "\$08"
+       "\$01"
+       "C"
+       "\$00"
+       "\$00"
+       "\$01"
+       "B"
+       "\$FF"
+       "\$FF"
+};
+
+#define LETXTBOX_00000004_CNT 32 /* move this line to the top of this file */
+
+resource rTextForLETextBox2 (LETXTBOX_00000004, $0000) {
+       "\$01"
+       "J"
+       "\$00"
+       "\$00"
+       "\$01"
+       "L"
+       "\$00"
+       "\$00"
+       "\$01"
+       "R"
+       "\$04"
+       "\$00"
+       "\$01"
+       "F"
+       "\$FE"
+       "\$FF"
+       "\$00"
+       "\$08"
+       "\$01"
+       "C"
+       "\$00"
+       "\$00"
+       "\$01"
+       "B"
+       "\$FF"
+       "\$FF"
+       "Normal"
+};
+
+#define LETXTBOX_00000005_CNT 34 /* move this line to the top of this file */
+
+resource rTextForLETextBox2 (LETXTBOX_00000005, $0000) {
+       "\$01"
+       "J"
+       "\$00"
+       "\$00"
+       "\$01"
+       "L"
+       "\$00"
+       "\$00"
+       "\$01"
+       "R"
+       "\$04"
+       "\$00"
+       "\$01"
+       "F"
+       "\$FE"
+       "\$FF"
+       "\$00"
+       "\$08"
+       "\$01"
+       "C"
+       "\$00"
+       "\$00"
+       "\$01"
+       "B"
+       "\$FF"
+       "\$FF"
+       "Header 1"
+};
+
+#define LETXTBOX_00000006_CNT 34 /* move this line to the top of this file */
+
+resource rTextForLETextBox2 (LETXTBOX_00000006, $0000) {
+       "\$01"
+       "J"
+       "\$00"
+       "\$00"
+       "\$01"
+       "L"
+       "\$00"
+       "\$00"
+       "\$01"
+       "R"
+       "\$04"
+       "\$00"
+       "\$01"
+       "F"
+       "\$FE"
+       "\$FF"
+       "\$00"
+       "\$08"
+       "\$01"
+       "C"
+       "\$00"
+       "\$00"
+       "\$01"
+       "B"
+       "\$FF"
+       "\$FF"
+       "Header 2"
+};
+
+#define LETXTBOX_00000007_CNT 34 /* move this line to the top of this file */
+
+resource rTextForLETextBox2 (LETXTBOX_00000007, $0000) {
+       "\$01"
+       "J"
+       "\$00"
+       "\$00"
+       "\$01"
+       "L"
+       "\$00"
+       "\$00"
+       "\$01"
+       "R"
+       "\$04"
+       "\$00"
+       "\$01"
+       "F"
+       "\$FE"
+       "\$FF"
+       "\$00"
+       "\$08"
+       "\$01"
+       "C"
+       "\$00"
+       "\$00"
+       "\$01"
+       "B"
+       "\$FF"
+       "\$FF"
+       "Header 3"
+};
+
+#define LETXTBOX_00000008_CNT 34 /* move this line to the top of this file */
+
+resource rTextForLETextBox2 (LETXTBOX_00000008, $0000) {
+       "\$01"
+       "J"
+       "\$00"
+       "\$00"
+       "\$01"
+       "L"
+       "\$00"
+       "\$00"
+       "\$01"
+       "R"
+       "\$04"
+       "\$00"
+       "\$01"
+       "F"
+       "\$FE"
+       "\$FF"
+       "\$00"
+       "\$08"
+       "\$01"
+       "C"
+       "\$00"
+       "\$00"
+       "\$01"
+       "B"
+       "\$FF"
+       "\$FF"
+       "Header 4"
+};
+
+#define LETXTBOX_00000009_CNT 34 /* move this line to the top of this file */
+
+resource rTextForLETextBox2 (LETXTBOX_00000009, $0000) {
+       "\$01"
+       "J"
+       "\$00"
+       "\$00"
+       "\$01"
+       "L"
+       "\$00"
+       "\$00"
+       "\$01"
+       "R"
+       "\$04"
+       "\$00"
+       "\$01"
+       "F"
+       "\$FE"
+       "\$FF"
+       "\$00"
+       "\$08"
+       "\$01"
+       "C"
+       "\$00"
+       "\$00"
+       "\$01"
+       "B"
+       "\$FF"
+       "\$FF"
+       "Header 5"
+};
+
+#define LETXTBOX_0000000A_CNT 34 /* move this line to the top of this file */
+
+resource rTextForLETextBox2 (LETXTBOX_0000000A, $0000) {
+       "\$01"
+       "J"
+       "\$00"
+       "\$00"
+       "\$01"
+       "L"
+       "\$00"
+       "\$00"
+       "\$01"
+       "R"
+       "\$04"
+       "\$00"
+       "\$01"
+       "F"
+       "\$FE"
+       "\$FF"
+       "\$00"
+       "\$08"
+       "\$01"
+       "C"
+       "\$00"
+       "\$00"
+       "\$01"
+       "B"
+       "\$FF"
+       "\$FF"
+       "Header 6"
+};
+
+#define LETXTBOX_0000000B_CNT 63 /* move this line to the top of this file */
+
+resource rTextForLETextBox2 (LETXTBOX_0000000B, $0000) {
+       "\$01"
+       "J"
+       "\$00"
+       "\$00"
+       "\$01"
+       "L"
+       "\$00"
+       "\$00"
+       "\$01"
+       "R"
+       "\$04"
+       "\$00"
+       "\$01"
+       "F"
+       "\$FE"
+       "\$FF"
+       "\$00"
+       "\$08"
+       "\$01"
+       "C"
+       "\$00"
+       "\$00"
+       "\$01"
+       "B"
+       "\$FF"
+       "\$FF"
+       "Bad value or real font size not found"
+};
+
+// --- Window Templates
+
+resource rWindParam1 (WPARAM1_00000FFA, $0000) {
+       $8080,                  // plFrame (frame bits)
+       PSTR_00010005,          // plTitle (title ID)
+       $00000000,              // plRefCon
+       {  0,  0,  0,  0},      // plZoomRect
+       NIL,                    // plColorTable (standard colors)
+       {$0000, $0000},         // plYOrigin, plXOrigin
+       {$0000, $0000},         // plDataHeight, plDataWidth
+       {$0000, $0000},         // plMaxHeight, plMaxWidth
+       {$0000, $0000},         // plVerScroll, plHorScroll
+       {$0000, $0000},         // plVerPage, plHorPage
+       $00000000,              // plInfoText (info RefCon)
+       $0000,                  // plInfoHeight
+       { 36,103,188,504},      // plPosition
+       infront,                // plPlane
+       CTLLST_00001003,        // plControlList
+       $0209                   // plInDesc
+};
+
+// --- rText Templates
+
+resource rText (TXT_00000002, $0000) {
+       "Markdown! A Babelfish translator that supports the importing mar"
+       "kdown files."
+};
+
+resource rText (TXT_00000003, $0000) {
+       "Markdown! A Babelfish translator that supports the importing mar"
+       "kdown files."
+};
+
+
+// --- type $8029 is undefined and therefore created as hex DATA 
+
+resource rVersion (R8029_00000001, $0000) {
+        {0, 0, 1, release, 0},
+        VerUS,
+        "MarkdownGS",
+        "Copyright \0xa9 "COPY_YEAR" Chris Vavruska"
+};
+
+// --- type $802A is undefined and therefore created as hex DATA 
+
+resource rComment (R802A_00000001, $0000) {
+        "\t\tMarkdown 0.0.1\n"
+        "\tCopyright \0xa9 "COPY_YEAR" Chris Vavruska\n"
+        "\n\n"
+        "A Markdown translator for Babelfish\n"
+};
+resource rComment (R802A_00000002, $0000) {
+        "This is a translator and can\0x27t be launched. It is a Seven Hills "
+        "Software \0x22Babelfish\0x22 extension that reads/writes a special data "
+        "format. To use it, put it in the \0x22*:System:SHS.Babelfish\0x22 "
+        "folder and open an application that uses Babelfish."
+};
+
+
