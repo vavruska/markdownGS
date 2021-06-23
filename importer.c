@@ -12,7 +12,6 @@
 
 #include <types.h>
 #include <gsos.h>
-#include <intmath.h>
 #include <loader.h>
 #include <locator.h>
 #include <memory.h>
@@ -75,6 +74,9 @@ extern long size;
 
 // Globals
 word debugIndentLevel = 0;
+
+//statics
+static long lastTherm = 0;
 
 static MD_PARSER parser = {
     0, // abi_version
@@ -705,9 +707,11 @@ static int textHook(MD_TEXTTYPE type, const MD_CHAR * text, MD_SIZE mdSize, void
 {
     BFProgressIn progressIn;
     BFProgressOut progressOut;
-    long *stats = (long *) userdata;
+    long stats[2];
+    long therm;
     extern BFXferRecPtr globalXfer;
-    extern long size;
+
+    memcpy(&stats, userdata, sizeof(stats));
 
     switch (type) {
         case MD_TEXT_NORMAL:
@@ -755,16 +759,20 @@ static int textHook(MD_TEXTTYPE type, const MD_CHAR * text, MD_SIZE mdSize, void
         writeString(text, mdSize);
     }
 
-    if (userdata) {
+    if (userdata && stats[0] && stats[1]) {
         size = stats[1];
         progressIn.xferRecPtr = globalXfer;
-        globalXfer->currentTherm = FixDiv(stats[0]*1000, stats[1]);
-        globalXfer->progressAction = bfNewMercury + bfUserMsg;
-        SendRequest(BFProgress,                 /* Request  */
-                    sendToName + stopAfterOne,    /* Flags    */
-                    (long)NAME_OF_BABELFISH,          /* Name     */
-                    (long)&progressIn,                     /* Data In  */
-                    (ptr)&progressOut);            /* Data Out */
+        therm = ((double) stats[0] / (double) stats[1]) * 255L;
+        if (therm != lastTherm) {
+            lastTherm = therm;
+            globalXfer->currentTherm = therm;
+            globalXfer->progressAction = bfNewMercury + bfUserMsg;
+            SendRequest(BFProgress,                 /* Request  */
+                        sendToName + stopAfterOne,    /* Flags    */
+                        (long)NAME_OF_BABELFISH,          /* Name     */
+                        (long)&progressIn,                     /* Data In  */
+                        (ptr)&progressOut);            /* Data Out */
+        }
     }
 
     

@@ -2,6 +2,10 @@
 #include "md.equ"
 
 #define COPY_YEAR "2021"
+#define VERSION_STR "V0.0.2"
+#define MAJ_VER 0
+#define MIN_VER 0
+#define PAT_VER 2
 
 read rCodeResource ($00000001, convert, locked) "o:babel";
 read rCodeResource ($00000002, convert, locked) "o:importOpt";
@@ -977,12 +981,12 @@ resource rWindParam1 (WPARAM1_00000FFA, $0000) {
 // --- rText Templates
 
 resource rText (TXT_00000002, $0000) {
-       "Markdown! A Babelfish translator that supports the importing mar"
+       "MarkdownGS! A Babelfish translator that supports the importing mar"
        "kdown files."
 };
 
 resource rText (TXT_00000003, $0000) {
-       "Markdown! A Babelfish translator that supports the importing mar"
+       "MarkdownGS! A Babelfish translator that supports the importing mar"
        "kdown files."
 };
 
@@ -990,7 +994,7 @@ resource rText (TXT_00000003, $0000) {
 // --- type $8029 is undefined and therefore created as hex DATA 
 
 resource rVersion (R8029_00000001, $0000) {
-        {0, 0, 1, release, 0},
+        {MAJ_VER, MIN_VER, PAT_VER, release, 0},
         VerUS,
         "MarkdownGS",
         "Copyright \0xa9 "COPY_YEAR" Chris Vavruska"
@@ -999,7 +1003,7 @@ resource rVersion (R8029_00000001, $0000) {
 // --- type $802A is undefined and therefore created as hex DATA 
 
 resource rComment (R802A_00000001, $0000) {
-        "\t\tMarkdown 0.0.1\n"
+        "\t\tMarkdownGS "VERSION_STR"\n"
         "\tCopyright \0xa9 "COPY_YEAR" Chris Vavruska\n"
         "\n\n"
         "A Markdown translator for Babelfish\n"
