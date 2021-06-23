@@ -30,6 +30,7 @@ long cnt = 0;
 
 
 void writeString(char *str, size_t len) {
+    extern TextData dataRecord;
     char *p;
     cnt++;
     dataNodeHndl node = (dataNodeHndl)NewHandle(sizeof(dataNode), userID, 0, NULL);
@@ -69,7 +70,7 @@ void writeChar(char c) {
 Handle translate(void) {
     Handle hand = NULL;
     char *data;
-    extern word err,cnt;
+    extern dataNodeHndl dataListHead;
 
     if (dataListHead != NULL) {
         dataNodeHndl node = dataListHead;
@@ -84,17 +85,18 @@ Handle translate(void) {
 }
 
 void setStyle(tStyleType styleType, uint16_t textMask, uint16_t headerSize) {
-
+extern TextData dataRecord;
     dataRecord.bfFontID = getDefaultFaceID();
 
     switch (styleType) {
     case STYLE_TYPE_HEADER:
         dataRecord.backColor = 0xFFFF;
         dataRecord.foreColor = 0x0;
-        dataRecord.fontSize = getHeaderSize(headerSize - 1);
+        dataRecord.fontSize = getHeaderSize(headerSize);
         dataRecord.fontStyle = textMask;
         break;
 
+    default:
     case STYLE_TYPE_TEXT:
         dataRecord.backColor = 0xFFFF;
         dataRecord.foreColor = 0x0;
@@ -118,3 +120,4 @@ void setStyle(tStyleType styleType, uint16_t textMask, uint16_t headerSize) {
         break;
     }
 }
+#pragma debug 0
