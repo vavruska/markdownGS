@@ -10,6 +10,8 @@
 #include <font.h>
 
 #include "babelfish.h"
+
+#include "defs.h"
 #include "translate.h"
 #include "opts.h"
 
@@ -84,13 +86,13 @@ Handle translate(void) {
     return hand;
 }
 
-void setStyle(tStyleType styleType, uint16_t textMask, uint16_t headerSize) {
-extern TextData dataRecord;
+void setStyle(tStyleType styleType, uint16_t textMask, uint16_t headerSize, uint16_t bgColor) {
+    extern TextData dataRecord;
     dataRecord.bfFontID = getDefaultFaceID();
 
     switch (styleType) {
     case STYLE_TYPE_HEADER:
-        dataRecord.backColor = 0xFFFF;
+        dataRecord.backColor = bgColor;
         dataRecord.foreColor = 0x0;
         dataRecord.fontSize = getHeaderSize(headerSize);
         dataRecord.fontStyle = textMask;
@@ -98,7 +100,11 @@ extern TextData dataRecord;
 
     default:
     case STYLE_TYPE_TEXT:
-        dataRecord.backColor = 0xFFFF;
+        if (bgColor) {
+            dataRecord.backColor = bgColor;
+        } else {
+            dataRecord.backColor = 0xFFFF;
+        }
         dataRecord.foreColor = 0x0;
         dataRecord.fontSize = getTextSize();
         dataRecord.fontStyle = textMask;
@@ -113,11 +119,12 @@ extern TextData dataRecord;
 
     case STYLE_TYPE_CODE:
         dataRecord.bfFontID = getMonoFaceID();
-        dataRecord.backColor = 0xEEEE;
-        dataRecord.foreColor = 0x0;
+        dataRecord.backColor = 0x0000;
+        dataRecord.foreColor = 0xFFFF;
         dataRecord.fontSize = getTextSize();
         dataRecord.fontStyle = textMask;
         break;
     }
 }
-#pragma debug 0
+
+

@@ -1,130 +1,1 @@
-
-#define rUpdateInfo $DEAD
-
-type rUpdateInfo {
- integer = 0; /* version must be zero */
- longint; /* Resource ID of string holding app's display name */
- longint; /* ID of string holding author's name */
- longint; /* ID of string URL to the downloads folder */
- longint; /* ID of string for downloadable archive name */
- longint; /* ID of string for Versions.List data file */
-};
-
-#define RDEAD_00000001 $00000001
-
-// --- type $8001 defines
-
-#define ICON_00000001 $00000001
-
-// --- type $8003 defines
-
-#define CTLLST_00001003 $00001003
-
-// --- type $8004 defines
-
-#define CTLTMP_00000001 $00000001
-#define CTLTMP_00000002 $00000002
-#define CTLTMP_00000003 $00000003
-#define CTLTMP_00000004 $00000004
-#define CTLTMP_00000006 $00000006
-#define CTLTMP_00000007 $00000007
-#define CTLTMP_00000008 $00000008
-#define CTLTMP_00000009 $00000009
-#define CTLTMP_0000000A $0000000A
-#define CTLTMP_0000000B $0000000B
-#define CTLTMP_0000000C $0000000C
-#define CTLTMP_0000000D $0000000D
-#define CTLTMP_0000000E $0000000E
-#define CTLTMP_0000000F $0000000F
-#define CTLTMP_00000010 $00000010
-#define CTLTMP_00000011 $00000011
-#define CTLTMP_00000012 $00000012
-#define CTLTMP_00000013 $00000013
-#define CTLTMP_00000014 $00000014
-#define CTLTMP_00000015 $00000015
-#define CTLTMP_00000016 $00000016
-#define CTLTMP_00000017 $00000017
-#define CTLTMP_00000018 $00000018
-#define CTLTMP_00000019 $00000019
-#define CTLTMP_0000001A $0000001A
-#define CTLTMP_0000001B $0000001B
-#define CTLTMP_0000001C $0000001C
-#define CTLTMP_0000001D $0000001D
-#define CTLTMP_0000001E $0000001E
-#define CTLTMP_0000001F $0000001F
-#define CTLTMP_00000020 $00000020
-#define CTLTMP_00000021 $00000021
-
-// --- type $8006 defines
-
-#define PSTR_00000003 $00000003
-#define PSTR_00000004 $00000004
-#define PSTR_00000005 $00000005
-#define PSTR_00000006 $00000006
-#define PSTR_00000007 $00000007
-#define PSTR_00000008 $00000008
-#define PSTR_00000009 $00000009
-#define PSTR_0000000A $0000000A
-#define PSTR_0000000B $0000000B
-#define PSTR_0000000E $0000000E
-#define PSTR_0000000F $0000000F
-#define PSTR_00000010 $00000010
-#define PSTR_00000011 $00000011
-#define PSTR_00000012 $00000012
-#define PSTR_00000013 $00000013
-#define PSTR_00000014 $00000014
-#define PSTR_00000015 $00000015
-#define PSTR_00010005 $00010005
-
-// --- type $8009 defines
-
-#define MENU_00000001 $00000001
-
-// --- type $800A defines
-
-#define MENUITEM_00000001 $00000001
-
-// --- type $800B defines
-
-#define LETXTBOX_00000001 $00000001
-#define LETXTBOX_00000002 $00000002
-#define LETXTBOX_00000003 $00000003
-#define LETXTBOX_00000004 $00000004
-#define LETXTBOX_00000005 $00000005
-#define LETXTBOX_00000006 $00000006
-#define LETXTBOX_00000007 $00000007
-#define LETXTBOX_00000008 $00000008
-#define LETXTBOX_00000009 $00000009
-#define LETXTBOX_0000000A $0000000A
-#define LETXTBOX_0000000B $0000000B
-
-// --- type $800E defines
-
-#define WPARAM1_00000FFA $00000FFA
-
-// --- type $8016 defines
-
-#define TXT_00000002 $00000002
-#define TXT_00000003 $00000003
-
-// --- type $8029 defines
-
-#define R8029_00000001 $00000001
-
-// --- type $802A defines
-
-#define R802A_00000001 $00000001
-#define R802A_00000002 $00000002
-
-#define LETXTBOX_00000001_CNT 36 /* move this line to the top of this file */
-#define LETXTBOX_00000002_CNT 33 /* move this line to the top of this file */
-#define LETXTBOX_00000003_CNT 52 /* move this line to the top of this file */
-#define LETXTBOX_00000004_CNT 32 /* move this line to the top of this file */
-#define LETXTBOX_00000005_CNT 34 /* move this line to the top of this file */
-#define LETXTBOX_00000006_CNT 34 /* move this line to the top of this file */
-#define LETXTBOX_00000007_CNT 34 /* move this line to the top of this file */
-#define LETXTBOX_00000008_CNT 34 /* move this line to the top of this file */
-#define LETXTBOX_00000009_CNT 34 /* move this line to the top of this file */
-#define LETXTBOX_0000000A_CNT 34 /* move this line to the top of this file */
-#define LETXTBOX_0000000B_CNT 63 /* move this line to the top of this file */
-
+#define rUpdateInfo $DEADtype rUpdateInfo { integer = 0; /* version must be zero */ longint; /* Resource ID of string holding app's display name */ longint; /* ID of string holding author's name */ longint; /* ID of string URL to the downloads folder */ longint; /* ID of string for downloadable archive name */ longint; /* ID of string for Versions.List data file */};#define RDEAD_00000001 $00000001// --- type $8001 defines#define ICON_00000001 $00000001// --- type $8003 defines#define CTLLST_00001003 $00001003#define CTLLST_00001004 $00001004#define CTLLST_00001005 $00001005// --- type $8004 defines#define CTLTMP_00000001 $00000001#define CTLTMP_00000002 $00000002#define CTLTMP_00000003 $00000003#define CTLTMP_00000004 $00000004#define CTLTMP_00000006 $00000006#define CTLTMP_00000007 $00000007#define CTLTMP_00000008 $00000008#define CTLTMP_00000009 $00000009#define CTLTMP_0000000A $0000000A#define CTLTMP_0000000B $0000000B#define CTLTMP_0000000C $0000000C#define CTLTMP_0000000D $0000000D#define CTLTMP_0000000E $0000000E#define CTLTMP_0000000F $0000000F#define CTLTMP_00000010 $00000010#define CTLTMP_00000011 $00000011#define CTLTMP_00000012 $00000012#define CTLTMP_00000013 $00000013#define CTLTMP_00000014 $00000014#define CTLTMP_00000015 $00000015#define CTLTMP_00000016 $00000016#define CTLTMP_00000017 $00000017#define CTLTMP_00000018 $00000018#define CTLTMP_00000019 $00000019#define CTLTMP_0000001A $0000001A#define CTLTMP_0000001B $0000001B#define CTLTMP_0000001C $0000001C#define CTLTMP_0000001D $0000001D#define CTLTMP_0000001E $0000001E#define CTLTMP_0000001F $0000001F#define CTLTMP_00000020 $00000020#define CTLTMP_00000021 $00000021#define CTLTMP_00000022 $00000022#define CTLTMP_00000023 $00000023#define CTLTMP_00000024 $00000024#define CTLTMP_00000025 $00000025#define CTLTMP_00000026 $00000026#define CTLTMP_00000027 $00000027#define CTLTMP_00000028 $00000028#define CTLTMP_00000029 $00000029#define CTLTMP_0000002A $0000002A#define CTLTMP_0000002B $0000002B#define CTLTMP_0000002C $0000002C#define CTLTMP_0000002D $0000002D#define CTLTMP_0000002E $0000002E#define CTLTMP_0000002F $0000002F#define CTLTMP_00000030 $00000030#define CTLTMP_00000031 $00000031#define CTLTMP_00000032 $00000032#define CTLTMP_00000033 $00000033#define CTLTMP_00000034 $00000034#define CTLTMP_00000035 $00000035#define CTLTMP_00000036 $00000036// --- type $8006 defines#define PSTR_00000001 $00000001#define PSTR_00000002 $00000002#define PSTR_00000003 $00000003#define PSTR_00000004 $00000004#define PSTR_00000005 $00000005#define PSTR_00000006 $00000006#define PSTR_00000007 $00000007#define PSTR_00000008 $00000008#define PSTR_00000009 $00000009#define PSTR_0000000A $0000000A#define PSTR_0000000B $0000000B#define PSTR_0000000E $0000000E#define PSTR_0000000F $0000000F#define PSTR_00000010 $00000010#define PSTR_00000011 $00000011#define PSTR_00000012 $00000012#define PSTR_00000013 $00000013#define PSTR_00000014 $00000014#define PSTR_00000015 $00000015#define PSTR_00000107 $00000107#define PSTR_00000108 $00000108#define PSTR_00000109 $00000109#define PSTR_0000010A $0000010A#define PSTR_0000010B $0000010B#define PSTR_0000010C $0000010C#define PSTR_0000010D $0000010D#define PSTR_0000010E $0000010E#define PSTR_0000010F $0000010F#define PSTR_00010005 $00010005#define PSTR_00010006 $00010006#define PSTR_00010007 $00010007#define PSTR_00010008 $00010008#define PSTR_00010009 $00010009#define PSTR_0001000A $0001000A#define PSTR_0001000B $0001000B#define PSTR_0001000C $0001000C#define PSTR_0001000D $0001000D#define PSTR_0001000E $0001000E#define PSTR_0001000F $0001000F#define PSTR_00010010 $00010010#define PSTR_00010011 $00010011#define PSTR_00010012 $00010012// --- type $8009 defines#define MENU_00000001 $00000001#define MENU_00000002 $00000002#define MENU_00000003 $00000003#define MENU_00000004 $00000004// --- type $800A defines#define MENUITEM_00000001 $00000001#define MENUITEM_00000002 $00000002#define MENUITEM_00000107 $00000107#define MENUITEM_00000108 $00000108#define MENUITEM_00000109 $00000109#define MENUITEM_0000010A $0000010A#define MENUITEM_0000010B $0000010B#define MENUITEM_0000010C $0000010C#define MENUITEM_0000010D $0000010D#define MENUITEM_0000010E $0000010E#define MENUITEM_0000010F $0000010F#define MENUITEM_00000110 $00000110#define MENUITEM_00000111 $00000111// --- type $800B defines#define LETXTBOX_00000001 $00000001#define LETXTBOX_00000002 $00000002#define LETXTBOX_00000003 $00000003#define LETXTBOX_00000004 $00000004#define LETXTBOX_00000005 $00000005#define LETXTBOX_00000006 $00000006#define LETXTBOX_00000007 $00000007#define LETXTBOX_00000008 $00000008#define LETXTBOX_00000009 $00000009#define LETXTBOX_0000000A $0000000A#define LETXTBOX_0000000B $0000000B#define LETXTBOX_0000000C $0000000C#define LETXTBOX_0000000D $0000000D#define LETXTBOX_0000000E $0000000E#define LETXTBOX_0000000F $0000000F#define LETXTBOX_00000010 $00000010#define LETXTBOX_00000011 $00000011#define LETXTBOX_00000012 $00000012#define LETXTBOX_00000013 $00000013// --- type $800E defines#define WPARAM1_00000FF9 $00000FF9#define WPARAM1_00000FFA $00000FFA#define WPARAM1_00000FFB $00000FFB// --- type $8016 defines#define TXT_00000002 $00000002#define TXT_00000003 $00000003// --- type $8029 defines#define R8029_00000001 $00000001// --- type $802A defines#define R802A_00000001 $00000001#define R802A_00000002 $00000002#define LETXTBOX_00000001_CNT 36 /* move this line to the top of this file */#define LETXTBOX_00000002_CNT 33 /* move this line to the top of this file */#define LETXTBOX_00000003_CNT 52 /* move this line to the top of this file */#define LETXTBOX_00000004_CNT 32 /* move this line to the top of this file */#define LETXTBOX_00000005_CNT 34 /* move this line to the top of this file */#define LETXTBOX_00000006_CNT 34 /* move this line to the top of this file */#define LETXTBOX_00000007_CNT 34 /* move this line to the top of this file */#define LETXTBOX_00000008_CNT 34 /* move this line to the top of this file */#define LETXTBOX_00000009_CNT 34 /* move this line to the top of this file */#define LETXTBOX_0000000A_CNT 34 /* move this line to the top of this file */#define LETXTBOX_0000000B_CNT 63 /* move this line to the top of this file */#define LETXTBOX_0000000C_CNT 47 /* move this line to the top of this file */#define LETXTBOX_0000000D_CNT 36 /* move this line to the top of this file */#define LETXTBOX_0000000E_CNT 34 /* move this line to the top of this file */#define LETXTBOX_0000000F_CNT 34 /* move this line to the top of this file */#define LETXTBOX_00000010_CNT 34 /* move this line to the top of this file */#define LETXTBOX_00000011_CNT 34 /* move this line to the top of this file */#define LETXTBOX_00000012_CNT 34 /* move this line to the top of this file */#define LETXTBOX_00000013_CNT 34 /* move this line to the top of this file */

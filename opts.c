@@ -13,7 +13,6 @@
 
 extern word userID;
 static opts options = DEFAULT_OPTS;
-static opts optBackup;
 static word id = 0;
 
 word sisHeaderSizes[] = { 24, 18, 14, 12, 10, 9 };
@@ -31,6 +30,17 @@ void loadOptions(void) {
 
     if (loadDataOut.bfResult == bfNoErr) {
         memcpy(&options, *(loadDataOut.dataHandle), sizeof(opts));
+    }
+    //upgrade to version 2
+    if (options.version == 1) {
+        word sizes[6] = OPTS_FONTSIZES;
+
+        options.version = OPTS_VERSION;
+        options.useImportFonts = OPTS_USEIMPORT;
+        options.indentStyle = OPTS_INDENTSTYLE;
+        options.endLineFormat = OPTS_LINE_APPLE;
+        options.exportIndent = OPTS_EXPORT_INDENT;
+        memcpy(&options.exportHeaderSize, sizes, sizeof(sizes));
     }
 }
 
@@ -86,6 +96,14 @@ void setUseSis(word value) {
     options.sisDefaults = value;
 }
 
+word getIndentStyle(void) {
+    return options.indentStyle;
+}
+
+void setIndentStyle(word value) {
+    options.indentStyle = value;
+}
+
 char *getDefaultFace(void) {
     return options.defaultFace;
 }
@@ -129,4 +147,46 @@ word getMonoFaceID(void) {
     return retVal;
 }
 
+word getUseImportSizes(void) {
+    return options.useImportFonts;
+}
+
+void setUseImportSizes(word value) {
+    options.useImportFonts = value;
+}
+
+word getExportHeaderSize(word size) {
+    if (options.useImportFonts) {
+        return getHeaderSize(size);
+    }
+    return options.exportHeaderSize[size - 1];
+}
+
+void setExportHeaderSize(word size, word value) {
+    options.exportHeaderSize[size - 1] = value;
+}
+
+word getLineEndingFormat(void) {
+    return options.endLineFormat;
+}
+
+void setLineEndingFormat(word value) {
+    options.endLineFormat = value;
+}
+
+word getExportIndent(void) {
+    return options.exportIndent;
+}
+
+void setExportIndent(word value) {
+    options.exportIndent = value;
+}
+
+word getShowExportWindow(void) {
+    return options.showExportWindow;
+}
+
+void setShowExportWindow(word value) {
+    options.showExportWindow = value;
+}
 

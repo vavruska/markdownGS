@@ -1,3 +1,5 @@
+#line 2 "/host/markdown/importer.c"
+#pragma noroot
 /*
  *  importer.c
  *
@@ -19,21 +21,18 @@
 #include <resources.h>
 
 #include "babelfish.h"
-
 #include "md4c.h"
+
+#include "defs.h"
 #include "dispatch.h"
 #include "translate.h"
+#include "importer.h"
+#include "opts.h"
 
-#pragma noroot
 
 // Typedefs
 
-typedef struct tEntity
-{
-    const char * entityString;
-    char entityChar;
-    uint32_t unicodeChar;
-} tEntity;
+
 
 typedef struct tBlockListItem
 {
@@ -50,7 +49,7 @@ typedef struct tBlockListItem
     struct tBlockListItem **next;
 } tBlockListItem;
 
-typedef long (*PARSER_CALLBACK)(const MD_CHAR* text, MD_SIZE size, const MD_PARSER* parser, void* userdata);
+typedef long (*PARSER_CALLBACK)(const MD_CHAR *text, MD_SIZE size, const MD_PARSER *parser, void *userdata);
 
 typedef struct {
     Word pCount;
@@ -61,16 +60,17 @@ typedef struct {
 
 // Forward declarations
 
-static int enterBlockHook(MD_BLOCKTYPE type, void * detail, void * userdata);
-static int leaveBlockHook(MD_BLOCKTYPE type, void * detail, void * userdata);
-static int enterSpanHook(MD_SPANTYPE type, void * detail, void * userdata);
-static int leaveSpanHook(MD_SPANTYPE type, void * detail, void * userdata);
-static int textHook(MD_TEXTTYPE type, const MD_CHAR * text, MD_SIZE size, void * userdata);
-static void debugLogHook(const char * message, void * userdata);
+static int enterBlockHook(MD_BLOCKTYPE type, void *detail, void *userdata);
+static int leaveBlockHook(MD_BLOCKTYPE type, void *detail, void *userdata);
+static int enterSpanHook(MD_SPANTYPE type, void *detail, void *userdata);
+static int leaveSpanHook(MD_SPANTYPE type, void *detail, void *userdata);
+static int textHook(MD_TEXTTYPE type, const MD_CHAR *text, MD_SIZE size, void *userdata);
+static void debugLogHook(const char *message, void *userdata);
 
 // Externs
 extern word userID;
 extern long size;
+extern TextData dataRecord;
 
 // Globals
 word debugIndentLevel = 0;
@@ -90,11 +90,11 @@ static MD_PARSER parser = {
     NULL // syntax
 };
 
-static tBlockListItem ** blockList = NULL;
+static tBlockListItem **blockList = NULL;
 
 static uint16_t textStyleMask = STYLE_TEXT_PLAIN;
 
-static tEntity entities[] = {
+tEntity entities[] = {
     { "&Tab;", 0x9, 0x9 },
     { "&NewLine;", 0x13, 0x10 },
     { "&excl;", 0x21, 0x21 },
@@ -316,23 +316,24 @@ static tEntity entities[] = {
     { "&ogon;", 0xfe, 0x2db },
     { "&caron;", 0xff, 0x2c7 },
     { "&Hacek;", 0xff, 0x2c7 },
+    { NULL, 0, 0 }
 };
 
 // Implementation
 
+#pragma debug 0
 #pragma databank 1
-static int enterBlockHook(MD_BLOCKTYPE type, void * detail, void * userdata)
-{
+static int enterBlockHook(MD_BLOCKTYPE type, void *detail, void *userdata) {
     static int isFirstNonDocumentBlock = 1;
     int shouldInsertCR = 1;
     uint16_t headerSize = 0;
-    tBlockListItem ** newBlock = (tBlockListItem **) NewHandle(sizeof(tBlockListItem), userID, attrFixed, NULL);
-    
+    tBlockListItem **newBlock = (tBlockListItem **)NewHandle(sizeof(tBlockListItem), userID, attrFixed, NULL);
+
     if (newBlock == NULL) {
         debugPrint("Out of memory");
         return 1;
     }
-    
+
     (*newBlock)->type = type;
     if (blockList == NULL) {
         (*newBlock)->numTabs = 0;
@@ -347,341 +348,396 @@ static int enterBlockHook(MD_BLOCKTYPE type, void * detail, void * userdata)
     }
     (*newBlock)->next = blockList;
     blockList = newBlock;
-    
+
     switch (type) {
-        case MD_BLOCK_DOC:
-            debugPrint("%*sDOC {\r", debugIndentLevel, "");
-            (*newBlock)->styleType = STYLE_TYPE_TEXT;
-            shouldInsertCR = 0;
-            break;
-            
-        case MD_BLOCK_QUOTE:
-            debugPrint("%*sQUOTE {\r", debugIndentLevel, "");
-            (*newBlock)->styleType = STYLE_TYPE_QUOTE;
-            shouldInsertCR = 0;
-            break;
-            
-        case MD_BLOCK_UL: {
-            MD_BLOCK_UL_DETAIL * ulDetail = (MD_BLOCK_UL_DETAIL *)detail;
+    case MD_BLOCK_DOC:
+        debugPrint("%*sDOC {\r", debugIndentLevel, "");
+        (*newBlock)->styleType = STYLE_TYPE_TEXT;
+        shouldInsertCR = 0;
+        break;
+
+    case MD_BLOCK_QUOTE:
+        debugPrint("%*sQUOTE {\r", debugIndentLevel, "");
+        (*newBlock)->styleType = STYLE_TYPE_QUOTE;
+        (*newBlock)->numTabs++;
+        shouldInsertCR = 0;
+        break;
+
+    case MD_BLOCK_UL:
+        {
+            MD_BLOCK_UL_DETAIL *ulDetail = (MD_BLOCK_UL_DETAIL *)detail;
             debugPrint("%*sUL (is_tight=%d, mark=%c) {\r", debugIndentLevel, "", ulDetail->is_tight, ulDetail->mark);
-            
+
             memcpy(&((*newBlock)->u.ulDetail), ulDetail, sizeof(*ulDetail));
             (*newBlock)->numTabs++;
             break;
         }
-            
-        case MD_BLOCK_OL: {
-            MD_BLOCK_OL_DETAIL * olDetail = (MD_BLOCK_OL_DETAIL *)detail;
+
+    case MD_BLOCK_OL:
+        {
+            MD_BLOCK_OL_DETAIL *olDetail = (MD_BLOCK_OL_DETAIL *)detail;
             debugPrint("%*sOL (start=%u, is_tight=%d, mark_delimiter=%c) {\r", debugIndentLevel, "", olDetail->start, olDetail->is_tight, olDetail->mark_delimiter);
-            
+
             memcpy(&((*newBlock)->u.olDetail), olDetail, sizeof(*olDetail));
             (*newBlock)->numTabs++;
             break;
         }
-            
-        case MD_BLOCK_LI: {
+
+    case MD_BLOCK_LI:
+        {
             int i;
-            tBlockListItem ** enclosingBlock = (*newBlock)->next;
-            
+            tBlockListItem **enclosingBlock = (*newBlock)->next;
+
             debugPrint("%*sLI {\r", debugIndentLevel, "");
-            
+
             if (enclosingBlock == NULL) {
                 debugPrint("Got a list item block without an enclosing block\r");
                 return 1;
             }
-            
+
             if ((*enclosingBlock)->type == MD_BLOCK_OL) {
                 shouldInsertCR = !(*enclosingBlock)->u.olDetail.is_tight;
             } else if ((*enclosingBlock)->type == MD_BLOCK_UL) {
                 shouldInsertCR = !(*enclosingBlock)->u.ulDetail.is_tight;
             }
-            
             break;
         }
-            
-        case MD_BLOCK_HR:
-            debugPrint("%*sHR {\r", debugIndentLevel, "");
-            break;
-            
-        case MD_BLOCK_H: {
-            MD_BLOCK_H_DETAIL * hDetail = (MD_BLOCK_H_DETAIL *)detail;
+
+    case MD_BLOCK_HR:
+        debugPrint("%*sHR {\r", debugIndentLevel, "");
+        shouldInsertCR = 0;
+        break;
+
+    case MD_BLOCK_H:
+        {
+            MD_BLOCK_H_DETAIL *hDetail = (MD_BLOCK_H_DETAIL *)detail;
+
             debugPrint("%*sH (level=%u) {\r", debugIndentLevel, "", hDetail->level);
-            
+
             memcpy(&((*newBlock)->u.hDetail), hDetail, sizeof(*hDetail));
-            setStyle(STYLE_TYPE_TEXT, textStyleMask, headerSize);
-            if (!isFirstNonDocumentBlock) {
-                writeChar('\r');
-                size++;
-            }
+            setStyle(STYLE_TYPE_TEXT, textStyleMask, headerSize, dataRecord.backColor);
             headerSize = hDetail->level;
             shouldInsertCR = 0;
             (*newBlock)->styleType = STYLE_TYPE_HEADER;
             break;
         }
-            
-        case MD_BLOCK_CODE: {
-            MD_BLOCK_CODE_DETAIL * codeDetail = (MD_BLOCK_CODE_DETAIL *)detail;
+
+    case MD_BLOCK_CODE:
+        {
+            MD_BLOCK_CODE_DETAIL *codeDetail = (MD_BLOCK_CODE_DETAIL *)detail;
             debugPrint("%*sCODE ", debugIndentLevel, "");
             if (codeDetail->fence_char != '\0') {
                 debugPrint("(fence_char=%c) ", codeDetail->fence_char);
             }
             debugPrint("{\r");
-            
+
             memcpy(&((*newBlock)->u.codeDetail), codeDetail, sizeof(*codeDetail));
             (*newBlock)->styleType = STYLE_TYPE_CODE;
             break;
         }
-            
-        case MD_BLOCK_P:
+
+    case MD_BLOCK_P:
+        {
+            tBlockListItem **enclosingBlock = (*newBlock)->next;
             debugPrint("%*sP {\r", debugIndentLevel, "");
-            break;
-            
-        default:
-            debugPrint("Invalid block type (%d)\r", (int)type);
-            return 1;
-            break;
+            if ((*newBlock)->numTabs) {
+                shouldInsertCR = 0;
+            }
+            if (enclosingBlock && ((*enclosingBlock)->type == MD_BLOCK_QUOTE)) {
+                debugPrint("%*sI {}\r", debugIndentLevel + 2, "");
+                if (getIndentStyle() == 1) {
+                    writeString(TABS, (*newBlock)->numTabs);
+                } else {
+                    writeString(SPACES, (*newBlock)->numTabs * getIndentStyle());
+                }
+            }
+
+        }
+        break;
+
+
+    default:
+        debugPrint("Invalid block type (%d)\r", (int)type);
+        return 1;
+        break;
     }
-    
-    setStyle((*newBlock)->styleType, textStyleMask, headerSize);
+
+    setStyle((*newBlock)->styleType, textStyleMask, headerSize, dataRecord.backColor);
     if ((!isFirstNonDocumentBlock) && (shouldInsertCR)) {
         writeChar('\r');
         size++;
     }
-    
+
     switch (type) {
-        case MD_BLOCK_LI: {
-            tBlockListItem ** enclosingBlock = (*newBlock)->next;
+    case MD_BLOCK_LI:
+        {
+            tBlockListItem **enclosingBlock = (*newBlock)->next;
             static char str[16];
 
-            //allow up to 15 tabs..even that is a bit ridiculous
-            writeString("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t", 
-                        (*newBlock)->numTabs > 15 ? 15 : (*newBlock)->numTabs);
-            size += 15;
-            
+            if (getIndentStyle() > 1) {
+                word spaces = (*newBlock)->numTabs - 1;
+                if (spaces) {
+                    spaces = (spaces > MAX_TABS) ? MAX_TABS * getIndentStyle()
+                        : (*newBlock)->numTabs * getIndentStyle();
+                    writeString(SPACES, spaces);
+                    size += spaces;
+                }
+            } else {
+                word tabs = (*newBlock)->numTabs > MAX_TABS ? MAX_TABS  : (*newBlock)->numTabs;
+                if (tabs) {
+                    writeString(TABS, tabs - 1);
+                    size += tabs;
+                }
+            }
+
             if ((*enclosingBlock)->type == MD_BLOCK_OL) {
                 sprintf(str, "%u%c ", (*enclosingBlock)->u.olDetail.start, (*enclosingBlock)->u.olDetail.mark_delimiter);
                 (*enclosingBlock)->u.olDetail.start++;
             } else {
-                sprintf(str, "%c ", 0xa5);    // 0xa5 is a bullet character
+                sprintf(str, "%c ", LIST_BULLET);    // 0xa5 is a bullet character
             }
             writeString(str, strlen(str));
-            size+= strlen(str);
+            size += strlen(str);
             break;
         }
-            
-        case MD_BLOCK_HR:             
-            writeString("______________________________", 30);
-            size += 30;
-            break;
-            
-        case MD_BLOCK_DOC:
-        case MD_BLOCK_QUOTE:
-        case MD_BLOCK_UL:
-        case MD_BLOCK_OL:
-        case MD_BLOCK_H:
-        case MD_BLOCK_CODE:
-        case MD_BLOCK_P:
-            break;
-            
-        default:
-            debugPrint("Invalid block type (%d)\r", (int)type);
-            return 1;
-            break;
+
+    case MD_BLOCK_HR:
+        writeString(HORIZONTAL_LINE, strlen(HORIZONTAL_LINE));
+        writeChar('\r');
+        size += (strlen(HORIZONTAL_LINE) + 1);
+        break;
+
+    case MD_BLOCK_DOC:
+    case MD_BLOCK_QUOTE:
+    case MD_BLOCK_UL:
+    case MD_BLOCK_OL:
+    case MD_BLOCK_H:
+    case MD_BLOCK_CODE:
+    case MD_BLOCK_P:
+        break;
+
+    default:
+        debugPrint("Invalid block type (%d)\r", (int)type);
+        return 1;
+        break;
     }
-        
+
     if (type != MD_BLOCK_DOC) {
         isFirstNonDocumentBlock = 0;
     }
-            
-    debugIndentLevel+=2;
+
+    debugIndentLevel += 2;
     return 0;
 }
 #pragma databank 0
 
 #pragma databank 1
-static int leaveBlockHook(MD_BLOCKTYPE type, void * detail, void * userdata)
-{
-    tBlockListItem ** oldBlock = blockList;
-    
+static int leaveBlockHook(MD_BLOCKTYPE type, void *detail, void *userdata) {
+    tBlockListItem **oldBlock = blockList;
+    static word skipNL = 0;
+
     if (oldBlock == NULL) {
         debugPrint("Block list is empty but leaving block of type %d\r", (int)type);
         return 1;
     }
-    
+
     if ((*oldBlock)->type != type) {
         debugPrint("Expected to leave block of type %d but got type %d\r", (int)(*oldBlock)->type, (int)type);
         return 1;
     }
-    
+
     blockList = (*oldBlock)->next;
-    DisposeHandle((Handle) oldBlock);
-    
+    DisposeHandle((Handle)oldBlock);
+
     switch (type) {
-        case MD_BLOCK_DOC:
-            break;
-            
-        case MD_BLOCK_QUOTE:
-            break;
-            
-        case MD_BLOCK_UL:
-            break;
-            
-        case MD_BLOCK_OL:
-            break;
-            
-        case MD_BLOCK_LI:
+    case MD_BLOCK_DOC:
+        break;
+
+    case MD_BLOCK_QUOTE:
+        dataRecord.backColor = 0xFFFF;
+        (*blockList)->numTabs;
+        break;
+
+    case MD_BLOCK_UL:
+    case MD_BLOCK_OL:
+        if (blockList && ((*blockList)->type == MD_BLOCK_LI)) {
+            skipNL = 1;
+        } else {
             writeChar('\r');
             size++;
-            break;
-            
-        case MD_BLOCK_HR:
+        }
+        break;
+
+    case MD_BLOCK_LI:
+        debugPrint("%*s NL\r", debugIndentLevel, "");
+        if (!skipNL) {
             writeChar('\r');
             size++;
-            break;
-            
-        case MD_BLOCK_H:
+        }
+        skipNL = 0;
+        break;
+
+    case MD_BLOCK_HR:
+        writeChar('\r');
+        size++;
+        break;
+
+    case MD_BLOCK_H:
+        {
+            bool needsHorizontalLine = false;
             if (blockList != NULL) {
-                setStyle((*blockList)->styleType, textStyleMask, 0);
+                needsHorizontalLine = ((dataRecord.fontSize == getHeaderSize(1)) || (dataRecord.fontSize == getHeaderSize(2)));
+                setStyle((*blockList)->styleType, textStyleMask, 0, dataRecord.backColor);
             }
             writeChar('\r');
             size++;
+
+            //header 1 & header 2 get an additional Horzontal line
+            if (needsHorizontalLine && 0) {
+                writeString(HORIZONTAL_LINE, strlen(HORIZONTAL_LINE));
+                writeChar('\r');
+                size +=strlen(HORIZONTAL_LINE);
+            }
             break;
-            
-        case MD_BLOCK_CODE:
-            break;
-            
-        case MD_BLOCK_P:
+        }
+
+    case MD_BLOCK_CODE:
+        break;
+
+    case MD_BLOCK_P:
+        {
             writeChar('\r');
             size++;
-            break;
-            
-        default:
-            debugPrint("Invalid block type (%d)\r", (int)type);
-            return 1;
-            break;
+            if (blockList && ((*blockList)->type != MD_BLOCK_QUOTE)) {
+                writeChar('\r');
+                size++;
+            }
+        }
+        break;
+
+    default:
+        debugPrint("Invalid block type (%d)\r", (int)type);
+        return 1;
+        break;
     }
-    
+
     if (blockList != NULL) {
-        setStyle((*blockList)->styleType, textStyleMask, 0);
+        setStyle((*blockList)->styleType, textStyleMask, 0, 0);
     }
-    
-    debugIndentLevel-=2;
+
+    debugIndentLevel -= 2;
     debugPrint("%*s}\r", debugIndentLevel, "");
-    
+
     return 0;
 }
 #pragma databank 0
 
 #pragma databank 1
-static int enterSpanHook(MD_SPANTYPE type, void * detail, void * userdata)
-{
+static int enterSpanHook(MD_SPANTYPE type, void *detail, void *userdata) {
     switch (type) {
-        case MD_SPAN_EM:
-            debugPrint("%*sEM {\r", debugIndentLevel, "");
-            
-            textStyleMask |= STYLE_TEXT_MASK_EMPHASIZED;
-            setStyle((*blockList)->styleType, textStyleMask, (*blockList)->u.hDetail.level);
-            break;
-            
-        case MD_SPAN_STRONG:
-            debugPrint("%*sSTRONG {\r", debugIndentLevel, "");
-            
-            textStyleMask |= STYLE_TEXT_MASK_STRONG;
-            setStyle((*blockList)->styleType, textStyleMask, (*blockList)->u.hDetail.level);
-            break;
-            
-        case MD_SPAN_A:
-            debugPrint("%*sA {\r", debugIndentLevel, "");
-            break;
-            
-        case MD_SPAN_IMG:
-            debugPrint("%*sIMG {\r", debugIndentLevel, "");
-            break;
-            
-        case MD_SPAN_CODE:
-            debugPrint("%*sCODE {\r", debugIndentLevel, "");
-            setStyle(STYLE_TYPE_CODE, STYLE_TEXT_PLAIN, 0);
-            break;
-            
-        default:
-            debugPrint("Invalid span type (%d)\r", (int)type);
-            return 1;
-            break;
+    case MD_SPAN_EM:
+        debugPrint("%*sEM {\r", debugIndentLevel, "");
+
+        textStyleMask |= STYLE_TEXT_MASK_EMPHASIZED;
+        setStyle((*blockList)->styleType, textStyleMask, (*blockList)->u.hDetail.level, dataRecord.backColor);
+        break;
+
+    case MD_SPAN_STRONG:
+        debugPrint("%*sSTRONG {\r", debugIndentLevel, "");
+
+        textStyleMask |= STYLE_TEXT_MASK_STRONG;
+        setStyle((*blockList)->styleType, textStyleMask, (*blockList)->u.hDetail.level, dataRecord.backColor);
+        break;
+
+    case MD_SPAN_A:
+        debugPrint("%*sA {\r", debugIndentLevel, "");
+        break;
+
+    case MD_SPAN_IMG:
+        debugPrint("%*sIMG {\r", debugIndentLevel, "");
+        break;
+
+    case MD_SPAN_CODE:
+        debugPrint("%*sCODE {\r", debugIndentLevel, "");
+        setStyle(STYLE_TYPE_CODE, STYLE_TEXT_PLAIN, 0, dataRecord.backColor);
+        break;
+
+    default:
+        debugPrint("Invalid span type (%d)\r", (int)type);
+        return 1;
+        break;
     }
-    
-    debugIndentLevel+=2;
+
+    debugIndentLevel += 2;
     return 0;
 }
 #pragma databank 0
 
 #pragma databank 1
-static int leaveSpanHook(MD_SPANTYPE type, void * detail, void * userdata)
-{
+static int leaveSpanHook(MD_SPANTYPE type, void *detail, void *userdata) {
     switch (type) {
-        case MD_SPAN_EM:
-            textStyleMask &= ~STYLE_TEXT_MASK_EMPHASIZED;
-            setStyle((*blockList)->styleType, textStyleMask, (*blockList)->u.hDetail.level);
-            break;
-            
-        case MD_SPAN_STRONG:
-            textStyleMask &= ~STYLE_TEXT_MASK_STRONG;
-            setStyle((*blockList)->styleType, textStyleMask, (*blockList)->u.hDetail.level);
-            break;
-            
-        case MD_SPAN_A:
-            break;
-            
-        case MD_SPAN_IMG:
-            break;
-            
-        case MD_SPAN_CODE:
-            setStyle((*blockList)->styleType, textStyleMask, (*blockList)->u.hDetail.level);
-            break;
-            
-        default:
-            debugPrint("Invalid span type (%d)\r", (int)type);
-            return 1;
-            break;
+    case MD_SPAN_EM:
+        textStyleMask &= ~STYLE_TEXT_MASK_EMPHASIZED;
+        setStyle((*blockList)->styleType, textStyleMask, (*blockList)->u.hDetail.level, dataRecord.backColor);
+        break;
+
+    case MD_SPAN_STRONG:
+        textStyleMask &= ~STYLE_TEXT_MASK_STRONG;
+        setStyle((*blockList)->styleType, textStyleMask, (*blockList)->u.hDetail.level, dataRecord.backColor);
+        break;
+
+    case MD_SPAN_A:
+        break;
+
+    case MD_SPAN_IMG:
+        break;
+
+    case MD_SPAN_CODE:
+        setStyle((*blockList)->styleType, textStyleMask, (*blockList)->u.hDetail.level, dataRecord.backColor);
+        break;
+
+    default:
+        debugPrint("Invalid span type (%d)\r", (int)type);
+        return 1;
+        break;
     }
-    
-    debugIndentLevel-=2;
+
+    debugIndentLevel -= 2;
     debugPrint("%*s}\r", debugIndentLevel, "");
-    
+
     return 0;
 }
 #pragma databank 0
 
-static word printEntity(const MD_CHAR * text, MD_SIZE size)
-{
+static word printEntity(const MD_CHAR *text, MD_SIZE size) {
     int entityNum;
     uint32_t unicodeChar = 0;
-    
+
     if (size < 4) {
         return 0;
     }
-    
+
     if (text[0] != '&') {
         return 0;
     }
-    
+
     if (text[size - 1] != ';') {
         return 0;
     }
-    
+
     if (text[1] == '#') {
-        char * end;
+        char *end;
         unicodeChar = strtoul(text + 2, &end, 10);
-        if (end != text + size - 1)
-            unicodeChar = 0;
+        if (end != text + size - 1) unicodeChar = 0;
         if ((unicodeChar > 0) &&
             (unicodeChar < 128)) {
             writeChar(unicodeChar);
             return 1;
         }
     }
-    
+
     if (text[1] == 'x') {
-        char * end;
+        char *end;
         unicodeChar = strtoul(text + 2, &end, 16);
         if (end != text + size - 1) {
             unicodeChar = 0;
@@ -692,19 +748,20 @@ static word printEntity(const MD_CHAR * text, MD_SIZE size)
             return 1;
         }
     }
-    
-    for (entityNum = 0; entityNum < (sizeof(entities) / sizeof(entities[0])); entityNum++) {
+
+    entityNum = 0;
+    while (entities[entityNum].entityChar != 0) {
         if ((unicodeChar == entities[entityNum].unicodeChar) ||
             (strncmp(entities[entityNum].entityString, text, size) == 0)) {
             writeChar(entities[entityNum].entityChar);
             return 1;
         }
+        entityNum++;
     }
 }
 
 #pragma databank 1
-static int textHook(MD_TEXTTYPE type, const MD_CHAR * text, MD_SIZE mdSize, void * userdata)
-{
+static int textHook(MD_TEXTTYPE type, const MD_CHAR *text, MD_SIZE mdSize, void *userdata) {
     BFProgressIn progressIn;
     BFProgressOut progressOut;
     long stats[2];
@@ -714,46 +771,46 @@ static int textHook(MD_TEXTTYPE type, const MD_CHAR * text, MD_SIZE mdSize, void
     memcpy(&stats, userdata, sizeof(stats));
 
     switch (type) {
-        case MD_TEXT_NORMAL:
-            debugPrint("%*sText: \"", debugIndentLevel, "");
-            break;
-        
-        case MD_TEXT_NULLCHAR:
-            debugPrint("Null character encountered on input\r");
-            return 1;
-            
-        case MD_TEXT_BR:
-            debugPrint("%*sBR\r", debugIndentLevel, "");
-            writeChar('\r');
-            size++;
-            return 0;
-            
-        case MD_TEXT_SOFTBR:
-            debugPrint("%*sSOFT BR\r", debugIndentLevel, "");
-            return 0;
-            
-        case MD_TEXT_ENTITY:
-            debugPrint("%*sEntity: \"", debugIndentLevel, "");
-            debugWrite(text, sizeof(MD_CHAR), mdSize);
-            
-            size += printEntity(text, mdSize);
-            text = "";
-            mdSize = 0;
-            break;
-            
-        case MD_TEXT_CODE:
-            debugPrint("%*sCode: \"", debugIndentLevel, "");
-            break;
-            
-        default:
-            debugPrint("Invalid text type (%d)\r", (int)type);
-            return 1;
-            break;
+    case MD_TEXT_NORMAL:
+        debugPrint("%*sText: \"", debugIndentLevel, "");
+        break;
+
+    case MD_TEXT_NULLCHAR:
+        debugPrint("Null character encountered on input\r");
+        return 1;
+
+    case MD_TEXT_BR:
+        debugPrint("%*sBR\r", debugIndentLevel, "");
+        writeChar('\r');
+        size++;
+        return 0;
+
+    case MD_TEXT_SOFTBR:
+        debugPrint("%*sSOFT BR\r", debugIndentLevel, "");
+        return 0;
+
+    case MD_TEXT_ENTITY:
+        debugPrint("%*sEntity: \"", debugIndentLevel, "");
+        debugWrite(text, sizeof(MD_CHAR), mdSize);
+
+        size += printEntity(text, mdSize);
+        text = "";
+        mdSize = 0;
+        break;
+
+    case MD_TEXT_CODE:
+        debugPrint("%*sCode: \"", debugIndentLevel, "");
+        break;
+
+    default:
+        debugPrint("Invalid text type (%d)\r", (int)type);
+        return 1;
+        break;
     }
-    
+
     debugWrite(text, sizeof(MD_CHAR), mdSize);
     debugPrint("\"\r");
-    
+
     size += mdSize;
     if (mdSize > 0) {
         writeString(text, mdSize);
@@ -762,7 +819,7 @@ static int textHook(MD_TEXTTYPE type, const MD_CHAR * text, MD_SIZE mdSize, void
     if (userdata && stats[0] && stats[1]) {
         size = stats[1];
         progressIn.xferRecPtr = globalXfer;
-        therm = ((double) stats[0] / (double) stats[1]) * 255L;
+        therm = ((double)stats[0] / (double)stats[1]) * 255L;
         if (therm != lastTherm) {
             lastTherm = therm;
             globalXfer->currentTherm = therm;
@@ -775,15 +832,14 @@ static int textHook(MD_TEXTTYPE type, const MD_CHAR * text, MD_SIZE mdSize, void
         }
     }
 
-    
+
     return 0;
 }
 #pragma databank 0
 
 
 #pragma databank 1
-static void debugLogHook(const char * message, void * userdata)
-{
+static void debugLogHook(const char *message, void *userdata) {
     debugPrint("DEBUG: %s\r", message);
 }
 #pragma databank 0
@@ -796,18 +852,18 @@ void loadParser(long *codeHandle, word *userID) {
 
     resultBuf.bufSize = 255;
     pathInfo.pCount = 3;
-    pathInfo.refNum = GetOpenFileRefNum (GetCurResourceFile());
+    pathInfo.refNum = GetOpenFileRefNum(GetCurResourceFile());
     pathInfo.pathname = &resultBuf;
     GetRefInfoGS(&pathInfo);
 
     memset(&loadInfo, 0, sizeof(InitialLoadOutputRec));
-    loadInfo = InitialLoad2(0x5000, (ptr) &resultBuf.bufString, 1, 1);
+    loadInfo = InitialLoad2(0x5000, (ptr)&resultBuf.bufString, 1, 1);
     err = toolerror();
-    *codeHandle = (long) loadInfo.startAddr;
+    *codeHandle = (long)loadInfo.startAddr;
     *userID = loadInfo.userID;
 }
 
-int mdImport(const MD_CHAR* text, MD_SIZE size, bool showProgress) {
+int mdImport(const MD_CHAR *text, MD_SIZE size, bool showProgress) {
     int result = -1;
     long codeHandle;
     word codeID;
@@ -818,10 +874,10 @@ int mdImport(const MD_CHAR* text, MD_SIZE size, bool showProgress) {
         mdParser = (PARSER_CALLBACK)codeHandle;
         // This is a bit of a hack, I am using the "userdata" param to
         // tell md4c to pass offset information to the importer functions.
-        result = mdParser(text, size, &parser, (void *) showProgress);
+        result = mdParser(text, size, &parser, (void *)showProgress);
     }
 
     DisposeAll(codeID);
-    
+
     return result;
 }
