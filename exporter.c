@@ -1,4 +1,3 @@
-#line 2 "/host/markdown/exporter.c"
 #pragma noroot
 
 #include <types.h>
@@ -141,7 +140,6 @@ bool headerCheck(char data, TextData *td, char *out, long *len) {
     return (headerSize != 0);
 }
 
-#pragma debug 0
 bool horizontalRuleCheck(char *data, long *pos, char *output, long *len, long dataLen) {
     char *d = data + *pos + strlen(HORIZONTAL_LINE);
     if (dataLen - *pos > 31) {
@@ -160,7 +158,6 @@ bool horizontalRuleCheck(char *data, long *pos, char *output, long *len, long da
     return false;
 }
 
-#pragma debug 0
 bool listCheck(char *data, long *pos, char *output, long *len, long dataLen) {
     int count = 0;
     word numberLen = 0;
@@ -211,8 +208,6 @@ bool listCheck(char *data, long *pos, char *output, long *len, long dataLen) {
     }
     return inList;
 }
-#pragma debug 0
-
 
 bool codeBlockCheck(char *data, long *pos, TextData *td, char *output, long *len) {
     if ((inCodeBlock == false) &&
@@ -288,7 +283,6 @@ bool blockQuoteCheck(char *data, long *pos, TextData *td, char *output, long *le
     return (count != 0);
 }
 
-#pragma debug 0
 word writeMarkdown(word refNum, char *data, TextData *td) {
     Handle outHndl = NewHandle(OUT_ALLOC_BUF_SIZE, userID, attrFixed + attrLocked, NULL);
     char *output = *outHndl;

@@ -1,4 +1,3 @@
-#line 2 "/host/markdown/importer.c"
 #pragma noroot
 /*
  *  importer.c
@@ -321,7 +320,6 @@ tEntity entities[] = {
 
 // Implementation
 
-#pragma debug 0
 #pragma databank 1
 static int enterBlockHook(MD_BLOCKTYPE type, void *detail, void *userdata) {
     static int isFirstNonDocumentBlock = 1;
