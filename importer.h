@@ -1,17 +1,8 @@
-/*
- *  translate.h
- *  md2teach
- *
- *  Created by Jeremy Rand on 2021-04-24.
- * 
- */
-
-#ifndef _GUARD_PROJECTmd2teach_FILEtranslate_
-#define _GUARD_PROJECTmd2teach_FILEtranslate_
+#ifndef __IMPORTER_H__
+#define __IMPORTER_H__
 
 #include "md4c.h"
 
-
 extern int mdImport(const MD_CHAR* text, MD_SIZE size, bool showProgress);
 
-#endif /* define _GUARD_PROJECTmd2teach_FILEtranslate_ */
+#endif

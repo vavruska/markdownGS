@@ -15,6 +15,7 @@
 
 #include "babelfish.h"
 #include "import.h"
+#include "export.h"
 
 extern word userID;
 FILE *debugFd = NULL;
@@ -33,7 +34,7 @@ word dispatch(word request, BFXferRecHndl dataIn, BFResultOutPtr dataOut) {
     case TrStartUp:
         userID = MMStartUp();
         if (((*dataIn)->miscFlags) & bffExporting) {
-            //do nothing..should not get this
+            exportStartup(*dataIn, dataOut);
         } else {
             importStartup(*dataIn, dataOut);
         }
@@ -41,7 +42,7 @@ word dispatch(word request, BFXferRecHndl dataIn, BFResultOutPtr dataOut) {
         break;
     case TrShutDown:
         if (((*dataIn)->miscFlags) & bffExporting) {
-            //do nothing..should not get this
+             exportCleanUp(*dataIn, dataOut);
         } else {
             importCleanUp();
         }
@@ -49,6 +50,10 @@ word dispatch(word request, BFXferRecHndl dataIn, BFResultOutPtr dataOut) {
         break;
     case TrRead:
         trRead(*dataIn, dataOut);
+        result = 0x8000;
+        break;
+    case TrWrite:
+        trWrite(*dataIn, dataOut);
         result = 0x8000;
         break;
     }

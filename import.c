@@ -11,6 +11,7 @@
 
 #include "babelfish.h"
 
+#include "defs.h"
 #include "import.h"
 #include "importer.h"
 #include "dispatch.h"

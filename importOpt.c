@@ -46,6 +46,7 @@
 #define WARNHEADER6 0x0000001F
 #define WARNICON 0x00000020
 #define WARNTEXT 0x00000021
+#define INDENTMENU 0x00000034
 
 typedef struct fontItem {
     word            famNum;
@@ -111,6 +112,7 @@ void importOpt(BFXferRecPtr xfer) {
     validateFontSizes(myWindow);
     buildFontList();
     addFontsToMenu(GetCtlHandleFromID(myWindow, FONTLIST), getDefaultFace());
+    SetCtlValueByID(getIndentStyle(), myWindow, INDENTMENU);
     CalcMenuSize(0, 0, 0);
 
     ShowWindow(myWindow);
@@ -143,7 +145,7 @@ void importOpt(BFXferRecPtr xfer) {
         case FONTLIST: 
             {
                 fontItemHndl curItem;
-                word value = GetCtlValue(GetCtlHandleFromID(myWindow, FONTLIST));
+                word value = GetCtlValueByID(myWindow, FONTLIST);
                 curItem = firstFont;
                 while (curItem) {
                     if ((*curItem)->itemID == value) {
@@ -153,14 +155,17 @@ void importOpt(BFXferRecPtr xfer) {
                     }
                     curItem = (*curItem)->next;
                 }
+                break;
             }
+        default:
+            break;
         }
     }
 
     if (controlID == ACCEPT) {
         fontItemHndl curItem = firstFont;
 
-        value = GetCtlValue(GetCtlHandleFromID(myWindow, FONTLIST));
+        value = GetCtlValueByID(myWindow, FONTLIST);
         while (curItem) {
             if ((*curItem)->itemID == value) {
                 setDefaultFace((*curItem)->name);
@@ -171,6 +176,7 @@ void importOpt(BFXferRecPtr xfer) {
         if (curItem == NULL) {
             setDefaultFace("\pHelvetica");
         }
+        setIndentStyle(GetCtlValueByID(myWindow, INDENTMENU));
         saveOptions();
     }
 
