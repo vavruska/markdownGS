@@ -88,7 +88,6 @@ word stage2(GSString255Ptr pathname) {
     RefNumRecGS close = {1, 0};
     IORecGS read = {4, 0, 0, 0, 0};
     word score = 0;
-    char *match;
     word ret = bffFilterSpecific1;
 
     open.pathname = pathname;
@@ -103,6 +102,7 @@ word stage2(GSString255Ptr pathname) {
         if (toolerror() == 0) {
             char *pos = data;
             while ((pos < data + read.transferCount)) {
+                char *match;
                 //search for markdown special characters
                 if (match = strchr("#*_", *pos)) {
                     pos++;
@@ -127,12 +127,9 @@ word stage2(GSString255Ptr pathname) {
 }
 
 int strncasecmp(const char *s1, const char *s2, size_t n) {
-
-    unsigned char u1, u2;
-
     for (; n != 0; --n) {
-        u1 = (unsigned char) *s1++;
-        u2 = (unsigned char) *s2++;
+        unsigned char u1 = (unsigned char) *s1++;
+        unsigned char u2 = (unsigned char) *s2++;
         if (charmap[u1] != charmap[u2]) {
             return charmap[u1] - charmap[u2];
         }

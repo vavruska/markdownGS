@@ -62,6 +62,7 @@ void buildFontList(void);
 void addFontsToMenu(CtlRecHndl ctl, char *defaultFont);
 void DisposeMenuMemory(void);
 bool checkForSIS(void);
+word getFontSizeValue(WindowPtr wind, long controlID);
 void validateFontSizes(WindowPtr wind);
 
 WindowPtr     myWindow;
@@ -69,7 +70,6 @@ EventRecord   CurrentEvent;
 word          controlID = 0;
 versionHndl   ver;
 word userID;
-CtlRecHndl ctl;
 MemRecHndl myListHndl;
 fontItemHndl firstFont = NULL;
 MenuItemTemplate **GenericFont = NULL;
@@ -78,10 +78,11 @@ MenuItemTemplate **GenericFont = NULL;
 void importOpt(BFXferRecPtr xfer) {
     bool done = 0;
     int j = 0;
-    word idx;
     word value = 0;
     bool update = false;
     char verStr[10] = {0};
+    char version[12];
+    CtlRecHndl ctl;
 
     userID = MMStartUp();
 
@@ -94,12 +95,15 @@ void importOpt(BFXferRecPtr xfer) {
     //version
     ver = (versionHndl)LoadResource(rVersion, 1);
     VersionString(0, (*ver)->version, verStr);
+    ReleaseResource(0xFFFF, rVersion, 1);
     ctl = GetCtlHandleFromID(myWindow, VERSION);
     (*ctl)->ctlMoreFlags = 0x1000;
-    memmove(verStr + 2, verStr + 1, 8);
-    verStr[1] = 'v';
-    (*ctl)->ctlData = (long)(verStr + 1);
-    (*ctl)->ctlValue = strlen(verStr + 1);
+    memset(version, 0, sizeof(version));
+    version[0] = 'v';
+    strncpy(version + 1, verStr + 1, 8);
+    version[verStr[0] + 1] = 0;
+    (*ctl)->ctlData = (long)version;
+    (*ctl)->ctlValue = strlen(version);
 
     //initialize the values
     if (!checkForSIS()) {
@@ -145,10 +149,10 @@ void importOpt(BFXferRecPtr xfer) {
         case FONTLIST: 
             {
                 fontItemHndl curItem;
-                word value = GetCtlValueByID(myWindow, FONTLIST);
+                word ctlValue = GetCtlValueByID(myWindow, FONTLIST);
                 curItem = firstFont;
                 while (curItem) {
-                    if ((*curItem)->itemID == value) {
+                    if ((*curItem)->itemID == ctlValue) {
                         setDefaultFace((*curItem)->name);
                         validateFontSizes(myWindow);
                         break;
@@ -177,6 +181,14 @@ void importOpt(BFXferRecPtr xfer) {
             setDefaultFace("\pHelvetica");
         }
         setIndentStyle(GetCtlValueByID(myWindow, INDENTMENU));
+        if ((value = getFontSizeValue(myWindow, FONTSIZE))) {
+            setTextSize(value);
+        }
+        for (long i = HEADER1; i <= HEADER6; i++) {
+            if ((value = getFontSizeValue(myWindow, i))) {
+                setHeaderSize(i - HEADER1 + 1, value);
+            }
+        }
         saveOptions();
     }
 
@@ -191,10 +203,10 @@ void DrawWindow(void) {
 
 void setLETextFromWord(WindowPtr wind, CtlRecHndl ctl, word val) {
     if (ctl) {
-        char data[10] = { 0 };
         LERecHndl le;
         le = (LERecHndl) (*ctl)->ctlData;
         if (le) {
+            char data[10] = { 0 };
             snprintf(data, 10, "%d", val);
             LESetText(data, strlen(data), le);
             InvalRect(&(*ctl)->ctlRect);
@@ -206,7 +218,6 @@ void setLETextFromWord(WindowPtr wind, CtlRecHndl ctl, word val) {
 void setCtls(WindowPtr wind) {
     word hilite = getUseSis() ?  inactiveHilite : noHilite;
     CtlRecHndl ctl;
-    LERecHndl le;
 
     HiliteCtlByID(hilite, wind, FONTLIST);
     ctl = GetCtlHandleFromID(wind, FONTSIZE);
@@ -214,8 +225,8 @@ void setCtls(WindowPtr wind) {
     HiliteControl(hilite, ctl);
 
     for (int i = HEADER1; i < HEADER6 + 1; i++) {
-        HiliteControl(hilite, ctl);
         ctl = GetCtlHandleFromID(wind, i);
+        HiliteControl(hilite, ctl);
         setLETextFromWord(wind, ctl, getHeaderSize(i - HEADER1 + 1));
     }
 }
@@ -224,18 +235,13 @@ void buildFontList(void) {
     fontItemHndl currentFont = NULL;
     word famNum, famSpecs = 0;
     word positionNum = 1;
-    Handle h = NULL;
-    word value = 0;
-    word selectedFam = 0;
     fontItemHndl curItem, prevItem;
-    MenuBarRecHndl oldMenu;
 
     do {
         famNum = FindFamily(famSpecs, positionNum, NULL);
 
         if (famNum != 0xFFFF) {
-            h = NewHandle(sizeof(fontItem), userID, attrFixed + attrLocked, NULL);
-            currentFont = (fontItem **)h;
+            currentFont = (fontItem **) NewHandle(sizeof(fontItem), userID, attrLocked, NULL);
             (*currentFont)->next = NULL;
             (*currentFont)->famNum = FindFamily(famSpecs, positionNum, (char *)(*currentFont)->name);
             (*currentFont)->name[(*currentFont)->name[0] + 1] = 0;
@@ -267,7 +273,7 @@ void buildFontList(void) {
         positionNum++;
     } while (famNum != 0xFFFF);
 
-    GenericFont = (MenuItemTemplate **) NewHandle(sizeof(MenuItemTemplate) * positionNum, userID, attrFixed + attrLocked, NULL);
+    GenericFont = (MenuItemTemplate **) NewHandle(sizeof(MenuItemTemplate) * positionNum, userID, attrLocked, NULL);
     currentFont = firstFont;
     positionNum = 1;
 
@@ -390,6 +396,29 @@ bool validateFontSize(WindowPtr wind, long controlID) {
         valid = false;
     }
     return valid;
+}
+
+word getFontSizeValue(WindowPtr wind, long controlID) {
+    char txt[5];
+    word fontSize = 0;
+    bool valid = true;
+
+    GetLETextByID(myWindow, controlID, (StringPtr) txt);
+    for (int i = 1; i < txt[0]+1; i++) {
+        if (!isdigit(txt[i])) {
+            valid = false;
+            break;
+        }
+    }
+
+    if (valid) {
+        fontSize = atoi(txt + 1);
+        if ((fontSize < 1) || (fontSize > 255)) {
+            fontSize = 0;
+        }
+    }
+
+    return fontSize;
 }
 
 void validateFontSizes(WindowPtr wind) {

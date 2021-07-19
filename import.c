@@ -211,4 +211,5 @@ void importStartup(BFXferRecPtr dataIn, BFResultOutPtr dataOut) {
 }
 
 void importCleanUp(void) {
+    closeDebugFile();
 }

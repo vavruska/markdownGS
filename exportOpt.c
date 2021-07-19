@@ -26,7 +26,7 @@
 #define VERSION 0x00000002
 #define CANCEL 0x00000009
 #define ACCEPT 0x0000000A
-#define USEIMPORT 0x00000003
+#define USEIMPORT 0x00000024
 #define HEADER1 0x0000002D
 #define HEADER2 0x0000002E
 #define HEADER3 0x0000002F
@@ -47,6 +47,7 @@ typedef struct fontItem {
 
 //forward declarations
 void DrawWindow(void);
+bool validateFontSize(WindowPtr wind, long controlID);
 void setCtls(WindowPtr wind);
 
 word userID;
@@ -60,7 +61,6 @@ void exportOpt(BFXferRecPtr xfer) {
     versionHndl   ver;
     bool done = false;
     int j = 0;
-    word idx;
     word value = 0;
     bool update = false;
     char verStr[10] = { 0 };
@@ -86,7 +86,7 @@ void exportOpt(BFXferRecPtr xfer) {
     //initialize the values
     SetCtlValueByID(getUseImportSizes(), myWindow, USEIMPORT);
     SetCtlValueByID(getLineEndingFormat(), myWindow, ENDCHOICEMENU);
-    SetCtlValueByID(getIndentStyle(), myWindow, INDENTMENU);
+    SetCtlValueByID(getExportIndent(), myWindow, INDENTMENU);
     SetCtlValueByID(getShowExportWindow(), myWindow, SHOWWINDOW);
     setCtls(myWindow);
 
@@ -114,10 +114,22 @@ void exportOpt(BFXferRecPtr xfer) {
     }
 
     if (controlID == ACCEPT) {
+        value = GetCtlValueByID(myWindow, INDENTMENU);
         setLineEndingFormat(GetCtlValueByID(myWindow, ENDCHOICEMENU));
         setExportIndent(GetCtlValueByID(myWindow, INDENTMENU));
         setShowExportWindow(GetCtlValueByID(myWindow, SHOWWINDOW));
+        for (long i = 0; i < 6; i++) {
+            if (validateFontSize(myWindow, HEADER1 + i)) {
+                Str32 txt;
+                word fontSize;
 
+                GetLETextByID(myWindow, HEADER1 + i, (StringPtr) &txt);
+                fontSize = atoi(txt.text);
+                if ((fontSize > 1) && (fontSize <= 255)) {
+                    setExportHeaderSize(i + 1, fontSize);
+                }
+            }
+        }
         saveOptions();
     }
 
@@ -129,12 +141,47 @@ void DrawWindow(void) {
     DrawControls(GetPort());
 }
 
+bool validateFontSize(WindowPtr wind, long controlID) {
+    CtlRecHndl ctl = GetCtlHandleFromID(wind, controlID);
+    LERecHndl le = (LERecHndl) (*ctl)->ctlData;
+    Handle leHand = LEGetTextHand(le);
+    word leLen = LEGetTextLen(le);
+    char *leData = (char *) *leHand;
+    bool valid = true;
+    int i;
+
+    for (i = 0; i < leLen; i++) {
+        if (!isdigit(leData[i])) {
+            valid = false;
+            break;
+        }
+    }
+
+    if (valid && (leLen < 5)) {
+        char data[5] = { 0 };
+        word value;
+
+        strncpy(data, leData, leLen);
+        value = atoi(data);
+        if ((value >=  1) && (value <= 255))  {
+            //check to make sure fontsize exists
+            valid = true;
+        } else {
+            valid = false;
+        }
+    } else {
+        valid = false;
+    }
+    return valid;
+}
+
 void setLETextFromWord(WindowPtr wind, CtlRecHndl ctl, word val) {
     if (ctl) {
-        char data[10] = { 0 };
         LERecHndl le;
         le = (LERecHndl) (*ctl)->ctlData;
         if (le) {
+            char data[10] = { 0 };
+
             snprintf(data, 10, "%d", val);
             LESetText(data, strlen(data), le);
             InvalRect(&(*ctl)->ctlRect);
@@ -145,12 +192,11 @@ void setLETextFromWord(WindowPtr wind, CtlRecHndl ctl, word val) {
 void setCtls(WindowPtr wind) {
     word hilite = getUseImportSizes() ?  inactiveHilite : noHilite;
     CtlRecHndl ctl;
-    LERecHndl le;
 
     for (int i = HEADER1; i < HEADER6 + 1; i++) {
-        HiliteControl(hilite, ctl);
         ctl = GetCtlHandleFromID(wind, i);
-        setLETextFromWord(wind, ctl, getHeaderSize(i - HEADER1 + 1));
+        HiliteControl(hilite, ctl);
+        setLETextFromWord(wind, ctl, getExportHeaderSize(i - HEADER1 + 1));
     }
 }
 

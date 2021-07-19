@@ -61,7 +61,7 @@ void saveOptions(void) {
 
 word getHeaderSize(word size) {
     word retSize = 12;
-    if ((size >= 1) || (size <= 7)) {
+    if ((size >= 1) && (size <= 6)) {
         retSize = options.headerSize[size - 1];
         if (options.sisDefaults) {
             retSize = sisHeaderSizes[size - 1];
@@ -71,7 +71,7 @@ word getHeaderSize(word size) {
 }
 
 void setHeaderSize(word size, word value) {
-    if ((size >= 1) || (size <= 7)) {
+    if ((size >= 1) && (size <= 6)) {
         options.headerSize[size - 1] = value;
     }
 }

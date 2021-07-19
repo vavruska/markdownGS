@@ -32,7 +32,6 @@
 // Typedefs
 
 
-
 typedef struct tBlockListItem
 {
     MD_BLOCKTYPE type;
@@ -383,7 +382,6 @@ static int enterBlockHook(MD_BLOCKTYPE type, void *detail, void *userdata) {
 
     case MD_BLOCK_LI:
         {
-            int i;
             tBlockListItem **enclosingBlock = (*newBlock)->next;
 
             debugPrint("%*sLI {\r", debugIndentLevel, "");
@@ -762,11 +760,12 @@ static word printEntity(const MD_CHAR *text, MD_SIZE size) {
 static int textHook(MD_TEXTTYPE type, const MD_CHAR *text, MD_SIZE mdSize, void *userdata) {
     BFProgressIn progressIn;
     BFProgressOut progressOut;
-    long stats[2];
-    long therm;
+    long stats[2] = { 0 };
     extern BFXferRecPtr globalXfer;
 
-    memcpy(&stats, userdata, sizeof(stats));
+    if (userdata) {
+        memcpy(&stats, userdata, sizeof(stats));
+    }
 
     switch (type) {
     case MD_TEXT_NORMAL:
@@ -814,7 +813,8 @@ static int textHook(MD_TEXTTYPE type, const MD_CHAR *text, MD_SIZE mdSize, void 
         writeString(text, mdSize);
     }
 
-    if (userdata && stats[0] && stats[1]) {
+    if ((userdata!=NULL) && (stats[0]!=0) && (stats[1]!=0)) {
+        long therm;
         size = stats[1];
         progressIn.xferRecPtr = globalXfer;
         therm = ((double)stats[0] / (double)stats[1]) * 255L;
@@ -846,7 +846,6 @@ void loadParser(long *codeHandle, word *userID) {
     PathInfo pathInfo;
     ResultBuf255 resultBuf;
     InitialLoadOutputRec loadInfo;
-    word err;
 
     resultBuf.bufSize = 255;
     pathInfo.pCount = 3;
@@ -856,7 +855,6 @@ void loadParser(long *codeHandle, word *userID) {
 
     memset(&loadInfo, 0, sizeof(InitialLoadOutputRec));
     loadInfo = InitialLoad2(0x5000, (ptr)&resultBuf.bufString, 1, 1);
-    err = toolerror();
     *codeHandle = (long)loadInfo.startAddr;
     *userID = loadInfo.userID;
 }

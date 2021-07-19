@@ -66,13 +66,11 @@ void createDebugFile(void) {
     FileInfoRecGS   info = { 5, &path };
     ResultBuf255    option = { 255, 0 };
     NameRecGS destroy = { 1, &path };
-    word err;
 
     //if the file exists then delete it and create a new one.
     //debugging is enabled by creating the file
     info.optionList = &option;
     GetFileInfoGS(&info);
-    err = toolerror();
     if (toolerror() == 0) {
         DestroyGS(&destroy);
         if (toolerror() == 0) {
@@ -94,7 +92,6 @@ void closeDebugFile(void) {
 void debugPrint(const char *format, ...) {
 
     va_list arglist;
-    extern char dbgBuffer[];
 
     va_start(arglist, format);
     vsprintf(dbgBuffer, format, arglist );

@@ -78,7 +78,6 @@ void insertEntity(char *val, long *pos, char *output, long *len) {
 
 static void setExportStyle(word style, char *out, long *len) {
     word count = 0;
-    bool newStyle = false;
     if (!inHeading) {
         word newStyle = curStyle;
         //set the styles
@@ -141,7 +140,6 @@ bool headerCheck(char data, TextData *td, char *out, long *len) {
 }
 
 bool horizontalRuleCheck(char *data, long *pos, char *output, long *len, long dataLen) {
-    char *d = data + *pos + strlen(HORIZONTAL_LINE);
     if (dataLen - *pos > 31) {
         //check to make sure the whole line is just a horizontal line
         if (strncmp(data + *pos, HORIZONTAL_LINE"\r", strlen(HORIZONTAL_LINE) + 1) == 0) {
@@ -159,8 +157,6 @@ bool horizontalRuleCheck(char *data, long *pos, char *output, long *len, long da
 }
 
 bool listCheck(char *data, long *pos, char *output, long *len, long dataLen) {
-    int count = 0;
-    word numberLen = 0;
     long curPos = *pos;
     char *d = data + curPos;
     word numbers = 0;
@@ -169,6 +165,7 @@ bool listCheck(char *data, long *pos, char *output, long *len, long dataLen) {
     //list are determined by multiples of spaces (or tabs) followed
     //by a bullet char or a number and a period. 
     if ((*d == ' ') || (*d == '\t') || (*d == LIST_BULLET) || isdigit(*d)) {
+        int count = 0;
         while ((strncmp(d, SPACES, getExportIndent()) == 0) || (*d == '\t')) {
             if (*d == '\t') {
                 curPos++;

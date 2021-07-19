@@ -49,7 +49,6 @@ void DrawWindow(void) {
 void gatherText(BFXferRecPtr dataIn) {
     TextData *td = (TextData *) dataIn->dataRecordPtr;
     tdListHndl node;
-    extern tdListHndl tdFront = NULL;
 
     if (dataIn->status == bfContinue) {
         if (td->textStreamHndl || td->textStreamLen) {
@@ -113,7 +112,6 @@ void exportData(BFXferRecPtr dataIn, BFResultOutPtr dataOut) {
     word            ratio = pos/255; 
     CtlRecHndl      thermo;
     EventRecord     currentEvent;
-    extern long pos;
 
     dataIn->status = bfNoErr;
 
@@ -200,6 +198,7 @@ void exportCleanUp(BFXferRecPtr dataIn, BFResultOutPtr dataOut) {
         DisposeHandle((Handle)tdFront);
         tdFront = next;
     }
+    closeDebugFile();
 }
 
 void trWrite(BFXferRecPtr dataIn, BFResultOutPtr dataOut) {

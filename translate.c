@@ -32,13 +32,12 @@ long cnt = 0;
 
 
 void writeString(char *str, size_t len) {
-    extern TextData dataRecord;
-    char *p;
     cnt++;
     dataNodeHndl node = (dataNodeHndl)NewHandle(sizeof(dataNode), userID, 0, NULL);
     if (toolerror() == 0) {
         (*node)->data = NewHandle(len, userID, attrFixed, NULL);
         if (toolerror() == 0) {
+            char *p;
             PtrToHand(str,(*node)->data, len);
             memcpy(&(*node)->textData, &dataRecord, sizeof(TextData));
             //convert \n to \r
@@ -71,14 +70,11 @@ void writeChar(char c) {
 
 Handle translate(void) {
     Handle hand = NULL;
-    char *data;
-    extern dataNodeHndl dataListHead;
 
     if (dataListHead != NULL) {
         dataNodeHndl node = dataListHead;
         dataListHead = (*node)->next;
         hand = (*node)->data;
-        data = *hand;
         memcpy(&dataRecord, &(*node)->textData, sizeof(TextData));
         DisposeHandle((Handle) node);
     }
@@ -87,7 +83,6 @@ Handle translate(void) {
 }
 
 void setStyle(tStyleType styleType, uint16_t textMask, uint16_t headerSize, uint16_t bgColor) {
-    extern TextData dataRecord;
     dataRecord.bfFontID = getDefaultFaceID();
 
     switch (styleType) {
