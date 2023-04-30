@@ -4,8 +4,9 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
-#include <types.h>
+#include <stdbool.h>
 
+#include <types.h>
 #include <control.h>
 #include <font.h>
 #include <lineedit.h>
@@ -77,9 +78,7 @@ MenuItemTemplate **GenericFont = NULL;
 #pragma databank 1
 void importOpt(BFXferRecPtr xfer) {
     bool done = 0;
-    int j = 0;
     word value = 0;
-    bool update = false;
     char verStr[10] = {0};
     char version[12];
     CtlRecHndl ctl;

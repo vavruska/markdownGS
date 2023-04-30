@@ -15,9 +15,9 @@ FILTER_OBJ=$(patsubst %,$(ODIR)/%,$(_FILTER_OBJ))
 
 DEPS=
 
-all: markdownGS $(ODIR)/._markdownGS.r
+all: MarkdownGS $(ODIR)/._MarkdownGS.r
 
-markdownGS: $(ODIR)/md $(ODIR)/babel $(ODIR)/importOpt $(ODIR)/filter $(ODIR)/exportOpt
+MarkdownGS: $(ODIR)/md $(ODIR)/babel $(ODIR)/importOpt $(ODIR)/filter $(ODIR)/exportOpt
 	@touch MarkdownGS
 	@iix chtyp -t 0x00BE -a 0x4003 $@
 
@@ -66,13 +66,13 @@ $(ODIR)/%.a: %.c $(DEPS)
 	@mkdir -p o
 	$(CC) --lint=-1 -O -1 -c -o $@ $<
 
-$(ODIR)/._markdownGS.r:  md.rez md.equ $(ODIR)/babel $(ODIR)/filter $(ODIR)/importOpt $(ODIR)/exportOpt 
+$(ODIR)/._MarkdownGS.r:  md.rez md.equ $(ODIR)/babel $(ODIR)/filter $(ODIR)/importOpt $(ODIR)/exportOpt 
 	@mkdir -p o
-	$(CC) -o $(ODIR)/markdownGS.r md.rez
-	cp $@ ._markdownGS
+	$(CC) -o $(ODIR)/MarkdownGS.r md.rez
+	cp $@ ._MarkdownGS
 
 clean:
 	@rm -f $(ODIR)/*.a $(ODIR)/*.root $(ODIR)/md 
-	@rm -f $(ODIR)/babel $(ODIR)/filter $(ODIR)/importOpt
+	@rm -f $(ODIR)/babel $(ODIR)/filter $(ODIR)/importOpt $(ODIR)/exportOpt
 	@rm -f $(ODIR)/*.r $(ODIR)/._*
 

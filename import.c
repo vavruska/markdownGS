@@ -1,6 +1,7 @@
 #pragma noroot
 
 #include <types.h>
+#include <stdbool.h>
 #include <string.h>
 #include <gsos.h>
 #include <intmath.h>
@@ -11,6 +12,7 @@
 
 #include "babelfish.h"
 
+#include "md4c.h"
 #include "defs.h"
 #include "import.h"
 #include "importer.h"
@@ -79,7 +81,7 @@ void trRead(BFXferRecPtr dataIn, BFResultOutPtr dataOut) {
                                 (ptr)&progressOut);            /* Data Out */
                 }
                 //call md4c
-                if (mdImport(*dataHandle, readRec.transferCount, dataIn->miscFlags & bffShowProgress) != -1) {
+                if (mdImport(*dataHandle, readRec.transferCount, (dataIn->miscFlags & bffShowProgress)) != -1) {
                     //we no longer need the data from the file
                     DisposeHandle(dataHandle);
                     if (dataIn->status == bfContinue && dataIn->miscFlags & bffShowProgress) {

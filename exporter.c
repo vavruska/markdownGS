@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include <font.h>
 #include <gsos.h>
@@ -96,13 +97,13 @@ static void setExportStyle(word style, char *out, long *len) {
         //unset the styles
         if ((!(style & STYLE_TEXT_MASK_STRONG)) &&
             (curStyle & STYLE_TEXT_MASK_STRONG)) {
-            debugPrint("[\B]");
+            debugPrint("[\\B]");
             count += 2;
             newStyle &= ~STYLE_TEXT_MASK_STRONG;
         }
         if ((!(style & STYLE_TEXT_MASK_EMPHASIZED)) &&
             (curStyle & STYLE_TEXT_MASK_EMPHASIZED)) {
-            debugPrint("[\I]");
+            debugPrint("[\\I]");
             count += 1;
             newStyle &= ~STYLE_TEXT_MASK_EMPHASIZED;
         }

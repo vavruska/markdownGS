@@ -4,8 +4,9 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
-#include <types.h>
+#include <stdbool.h>
 
+#include <types.h>
 #include <control.h>
 #include <lineedit.h>
 #include <locator.h>
@@ -60,9 +61,7 @@ void exportOpt(BFXferRecPtr xfer) {
     CtlRecHndl ctl;
     versionHndl   ver;
     bool done = false;
-    int j = 0;
     word value = 0;
-    bool update = false;
     char verStr[10] = { 0 };
 
     userID = MMStartUp();

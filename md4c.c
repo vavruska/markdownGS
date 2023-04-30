@@ -2330,7 +2330,9 @@ md_is_link_reference_definition(MD_CTX* ctx, const MD_LINE* lines, int32_t n_lin
 
     /* So, it _is_ a reference definition. Remember it. */
     if(ctx->n_ref_defs >= ctx->alloc_ref_defs) {
+#ifndef __ORCAC__
         MD_REF_DEF* new_defs;
+#endif	
 
         ctx->alloc_ref_defs = (ctx->alloc_ref_defs > 0
                 ? ctx->alloc_ref_defs + ctx->alloc_ref_defs / 2
@@ -2710,7 +2712,9 @@ md_push_mark(MD_CTX* ctx)
 #endif
 
     if(ctx->n_marks >= ctx->alloc_marks) {
+#ifndef __ORCAC__
         MD_MARK* new_marks;
+#endif
 
         ctx->alloc_marks = (ctx->alloc_marks > 0
                 ? ctx->alloc_marks + ctx->alloc_marks / 2
